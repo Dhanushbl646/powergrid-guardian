@@ -1,0 +1,1937 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PowerGrid Guardian — Complete Management System</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Share+Tech+Mono&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+/* ===== RESET & CSS VARIABLES ===== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#03070f;
+  --bg2:#060e1a;
+  --bg3:#0a1422;
+  --card:rgba(0,180,255,0.04);
+  --card2:rgba(0,180,255,0.07);
+  --border:rgba(0,200,255,0.1);
+  --border2:rgba(0,200,255,0.25);
+  --cyan:#00c8ff;
+  --cyan2:#0066ff;
+  --green:#00ff88;
+  --green2:#00cc6a;
+  --yellow:#ffd700;
+  --yellow2:#e6b800;
+  --red:#ff3366;
+  --red2:#cc0033;
+  --orange:#ff8c00;
+  --text:#e0f4ff;
+  --text2:#7ab8d4;
+  --text3:#3a6680;
+  --font-d:'Orbitron',monospace;
+  --font-m:'Share Tech Mono',monospace;
+  --font-b:'Rajdhani',sans-serif;
+  --glow-c:0 0 20px rgba(0,200,255,0.35);
+  --glow-g:0 0 20px rgba(0,255,136,0.35);
+  --glow-r:0 0 20px rgba(255,51,102,0.45);
+  --glow-y:0 0 20px rgba(255,215,0,0.35);
+  --radius:12px;
+  --radius2:8px;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-b);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;font-size:16px;line-height:1.6}
+
+/* ===== BACKGROUNDS ===== */
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,200,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,200,255,.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
+body::after{content:'';position:fixed;inset:0;background:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.02'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:.4}
+.animated-glow{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse 80% 50% at 50% 0%,rgba(0,100,255,.07) 0%,transparent 70%)}
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+/* ===== NAV ===== */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;height:60px;background:rgba(3,7,15,.94);backdrop-filter:blur(20px);border-bottom:1px solid var(--border2)}
+.nav-logo{font-family:var(--font-d);font-size:1rem;font-weight:800;letter-spacing:.1em;color:var(--cyan);text-shadow:0 0 20px rgba(0,200,255,.6);display:flex;align-items:center;gap:.5rem;text-decoration:none;flex-shrink:0}
+.nav-logo span{color:var(--text)}
+.nav-tabs{display:flex;gap:2px;overflow-x:auto;padding:6px 0}
+.nav-tabs::-webkit-scrollbar{height:0}
+.nav-tab{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:6px;border:none;background:transparent;color:var(--text2);font-family:var(--font-m);font-size:.7rem;font-weight:600;cursor:pointer;white-space:nowrap;letter-spacing:.12em;text-transform:uppercase;transition:all .2s}
+.nav-tab .dot{width:5px;height:5px;border-radius:50%;background:var(--text3);transition:all .2s;flex-shrink:0}
+.nav-tab:hover{color:var(--text);background:var(--card2)}
+.nav-tab.active{color:var(--cyan);background:rgba(0,200,255,.08)}
+.nav-tab.active .dot{background:var(--cyan);box-shadow:0 0 8px var(--cyan)}
+
+/* ===== PAGES ===== */
+main{position:relative;z-index:1;padding-top:60px}
+.page{display:none}
+.page.active{display:block;animation:fadeUp .4s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+/* ===== SECTION / LAYOUT ===== */
+.section{padding:4rem 2rem;max-width:1200px;margin:0 auto}
+.section-sm{padding:2.5rem 2rem;max-width:1200px;margin:0 auto}
+.section-title{font-family:var(--font-d);font-size:clamp(1.3rem,3vw,2rem);font-weight:700;letter-spacing:.05em;color:var(--text);margin-bottom:.4rem}
+.section-title em{color:var(--cyan);font-style:normal}
+.section-sub{font-size:.95rem;color:var(--text2);margin-bottom:2.5rem;font-family:var(--font-m)}
+.section-line{width:60px;height:2px;background:linear-gradient(90deg,var(--cyan),transparent);margin-bottom:1.5rem;border-radius:2px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media(max-width:900px){.grid-2{grid-template-columns:1fr}.grid-3{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.grid-3{grid-template-columns:1fr}}
+
+/* ===== CARDS ===== */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.75rem;position:relative;overflow:hidden;transition:all .3s}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);opacity:0;transition:opacity .3s}
+.card:hover{background:var(--card2);border-color:var(--border2);box-shadow:var(--glow-c);transform:translateY(-2px)}
+.card:hover::before{opacity:1}
+.card-icon{font-size:2rem;margin-bottom:1rem;display:block}
+.card-title{font-family:var(--font-d);font-size:.85rem;font-weight:600;color:var(--cyan);margin-bottom:.75rem;letter-spacing:.05em;display:flex;align-items:center;gap:8px}
+.card-title .badge{background:rgba(0,200,255,.1);color:var(--cyan);border:1px solid rgba(0,200,255,.2);border-radius:4px;padding:2px 7px;font-size:.65rem}
+.card-text{font-size:.95rem;color:var(--text2);line-height:1.6}
+
+/* ===== CARD GRIDS ===== */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem}
+
+/* ===== FORM ELEMENTS ===== */
+.form-group{margin-bottom:1.25rem}
+.form-label{display:block;font-family:var(--font-m);font-size:.72rem;letter-spacing:.15em;color:var(--cyan);text-transform:uppercase;margin-bottom:.5rem}
+.form-input,.form-select,.form-textarea{width:100%;background:rgba(0,200,255,.04);border:1px solid var(--border);border-radius:var(--radius2);padding:.75rem 1rem;color:var(--text);font-family:var(--font-b);font-size:.95rem;transition:all .2s;outline:none}
+.form-input::placeholder,.form-textarea::placeholder{color:var(--text3)}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--cyan);background:rgba(0,200,255,.06);box-shadow:0 0 0 2px rgba(0,200,255,.1)}
+.form-input.error{border-color:var(--red);box-shadow:0 0 0 2px rgba(255,51,102,.1)}
+.form-error{font-size:.7rem;color:var(--red);margin-top:4px;font-family:var(--font-m);display:none}
+.form-error.show{display:block}
+.form-select{appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2300c8ff' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 1rem center;background-color:rgba(0,200,255,.04);padding-right:2.5rem}
+.form-select option{background:#060e1a;color:var(--text)}
+.form-textarea{resize:vertical;min-height:100px}
+
+/* ===== BUTTONS ===== */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;padding:.8rem 1.8rem;border-radius:var(--radius2);border:none;font-family:var(--font-d);font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .25s;text-decoration:none;white-space:nowrap}
+.btn-primary{background:var(--cyan);color:#000;box-shadow:0 0 20px rgba(0,200,255,.3)}
+.btn-primary:hover{background:#fff;box-shadow:0 0 35px rgba(0,200,255,.6);transform:translateY(-2px)}
+.btn-secondary{background:transparent;color:var(--cyan);border:1px solid rgba(0,200,255,.4)}
+.btn-secondary:hover{background:rgba(0,200,255,.08);border-color:var(--cyan);transform:translateY(-2px)}
+.btn-danger{background:var(--red);color:#fff;box-shadow:0 0 20px rgba(255,51,102,.35)}
+.btn-danger:hover{background:#ff6688;box-shadow:0 0 30px rgba(255,51,102,.6);transform:translateY(-2px)}
+.btn-success{background:var(--green);color:#000;box-shadow:0 0 20px rgba(0,255,136,.3)}
+.btn-success:hover{background:#5fffb5;box-shadow:0 0 30px rgba(0,255,136,.6);transform:translateY(-2px)}
+.btn-warning{background:var(--yellow);color:#000;box-shadow:0 0 20px rgba(255,215,0,.3)}
+.btn-warning:hover{box-shadow:0 0 30px rgba(255,215,0,.6);transform:translateY(-2px)}
+.btn-gold{background:var(--yellow);color:#000;box-shadow:0 0 20px rgba(255,215,0,.3);width:100%;justify-content:center;font-size:.8rem;padding:1rem 2rem}
+.btn-gold:hover{background:#ffe040;box-shadow:0 0 35px rgba(255,215,0,.6);transform:translateY(-2px)}
+.btn-ghost{background:transparent;border:1px solid var(--border2);color:var(--text2)}
+.btn-ghost:hover{border-color:var(--cyan);color:var(--cyan)}
+.btn-sm{padding:.4rem .9rem;font-size:.65rem}
+.btn-lg{padding:1rem 2rem;font-size:.8rem;width:100%;justify-content:center}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important;box-shadow:none!important}
+
+/* ===== STATUS BADGES ===== */
+.status-safe{color:var(--green);background:rgba(0,255,136,.1);border:1px solid rgba(0,255,136,.25);padding:3px 10px;border-radius:20px;font-size:.68rem;font-weight:700;letter-spacing:.5px;display:inline-flex;align-items:center;gap:5px;font-family:var(--font-m)}
+.status-warn{color:var(--yellow);background:rgba(255,215,0,.1);border:1px solid rgba(255,215,0,.25);padding:3px 10px;border-radius:20px;font-size:.68rem;font-weight:700;letter-spacing:.5px;display:inline-flex;align-items:center;gap:5px;font-family:var(--font-m)}
+.status-danger{color:var(--red);background:rgba(255,51,102,.1);border:1px solid rgba(255,51,102,.25);padding:3px 10px;border-radius:20px;font-size:.68rem;font-weight:700;letter-spacing:.5px;display:inline-flex;align-items:center;gap:5px;font-family:var(--font-m)}
+.pulse{width:6px;height:6px;border-radius:50%;display:inline-block;animation:pulse 1.5s ease-in-out infinite}
+.pulse-green{background:var(--green);box-shadow:0 0 6px var(--green)}
+.pulse-yellow{background:var(--yellow);box-shadow:0 0 6px var(--yellow)}
+.pulse-red{background:var(--red);box-shadow:0 0 6px var(--red);animation-duration:.8s}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.4)}}
+
+/* ===== TOAST ===== */
+#toast-container{position:fixed;top:70px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:10px;pointer-events:none}
+.toast{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:var(--radius);font-family:var(--font-m);font-size:.75rem;font-weight:600;min-width:260px;max-width:360px;pointer-events:auto;animation:toastIn .35s cubic-bezier(.34,1.56,.64,1)}
+.toast.removing{animation:toastOut .3s ease forwards}
+.toast-success{background:rgba(0,255,136,.12);border:1px solid rgba(0,255,136,.3);color:var(--green)}
+.toast-error{background:rgba(255,51,102,.12);border:1px solid rgba(255,51,102,.3);color:var(--red)}
+.toast-info{background:rgba(0,200,255,.1);border:1px solid rgba(0,200,255,.25);color:var(--cyan)}
+.toast-warn{background:rgba(255,215,0,.1);border:1px solid rgba(255,215,0,.3);color:var(--yellow)}
+@keyframes toastIn{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
+@keyframes toastOut{to{opacity:0;transform:translateX(40px)}}
+
+/* ===== STATS ROW ===== */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:2rem}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem 1.5rem;display:flex;flex-direction:column;gap:.3rem;transition:all .3s}
+.stat-card:hover{border-color:var(--border2);transform:translateY(-2px)}
+.stat-value{font-family:var(--font-d);font-size:2rem;font-weight:800;letter-spacing:-.03em}
+.stat-label{font-family:var(--font-m);font-size:.7rem;letter-spacing:.12em;color:var(--text2);text-transform:uppercase}
+.val-cyan{color:var(--cyan);text-shadow:0 0 20px rgba(0,200,255,.5)}
+.val-green{color:var(--green);text-shadow:0 0 20px rgba(0,255,136,.5)}
+.val-orange{color:var(--orange);text-shadow:0 0 20px rgba(255,140,0,.5)}
+.val-red{color:var(--red);text-shadow:0 0 20px rgba(255,51,102,.5)}
+.val-yellow{color:var(--yellow)}
+
+/* ===== DIVIDER ===== */
+.divider{height:1px;background:var(--border);margin:1.5rem 0}
+
+/* ===== EMPTY STATE ===== */
+.empty-state{text-align:center;padding:3rem 1.5rem;color:var(--text3)}
+.empty-state .icon{font-size:3rem;display:block;margin-bottom:.75rem;opacity:.4}
+.empty-state p{font-size:.9rem}
+
+/* ===================================
+   PAGE: HOME (HERO)
+=================================== */
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:4rem 2rem;position:relative}
+.hero-glow{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:700px;height:700px;background:radial-gradient(circle,rgba(0,100,255,.1) 0%,transparent 70%);pointer-events:none}
+.hero-badge{font-family:var(--font-m);font-size:.7rem;letter-spacing:.3em;color:var(--cyan);background:rgba(0,200,255,.08);border:1px solid rgba(0,200,255,.2);padding:.4rem 1.2rem;border-radius:100px;margin-bottom:2rem;text-transform:uppercase;animation:pulseBadge 3s ease-in-out infinite}
+@keyframes pulseBadge{0%,100%{box-shadow:0 0 0 0 rgba(0,200,255,.2)}50%{box-shadow:0 0 20px 4px rgba(0,200,255,.15)}}
+.hero h1{font-family:var(--font-d);font-size:clamp(2.5rem,7vw,5.5rem);font-weight:900;line-height:1.05;letter-spacing:-.02em;margin-bottom:1.5rem}
+.hero h1 .line1{color:var(--text)}
+.hero h1 .line2{color:var(--cyan);text-shadow:0 0 40px rgba(0,200,255,.5)}
+.hero-sub{font-size:1.15rem;color:var(--text2);max-width:540px;margin-bottom:3rem;font-weight:400}
+.hero-buttons{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center}
+.status-bar{display:flex;align-items:center;gap:2rem;margin-top:3rem;padding:1rem 2rem;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);flex-wrap:wrap;justify-content:center}
+.status-item{display:flex;align-items:center;gap:.5rem;font-family:var(--font-m);font-size:.75rem;color:var(--text2)}
+.status-dot{width:8px;height:8px;border-radius:50%;animation:blink 1.8s ease-in-out infinite}
+.dot-green{background:var(--green);box-shadow:0 0 8px var(--green)}
+.dot-orange{background:var(--orange);box-shadow:0 0 8px var(--orange);animation-delay:.6s}
+.dot-red{background:var(--red);box-shadow:0 0 8px var(--red);animation-delay:1.2s}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ===================================
+   PAGE: LINE MAN REGISTRATION
+=================================== */
+.step-indicators{display:flex;gap:0;margin-bottom:2rem}
+.step{display:flex;align-items:center;gap:10px;flex:1}
+.step:not(:last-child)::after{content:'';flex:1;height:1px;background:var(--border);margin:0 12px}
+.step-num{width:32px;height:32px;border-radius:50%;border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:var(--text3);flex-shrink:0;transition:all .3s}
+.step.done .step-num{background:var(--green);border-color:var(--green);color:#000;box-shadow:var(--glow-g)}
+.step.active .step-num{background:rgba(0,200,255,.1);border-color:var(--cyan);color:var(--cyan);box-shadow:0 0 12px rgba(0,200,255,.3)}
+.step-label{font-size:.7rem;font-weight:600;color:var(--text3);white-space:nowrap;font-family:var(--font-m);text-transform:uppercase;letter-spacing:.08em}
+.step.active .step-label{color:var(--cyan)}
+.step.done .step-label{color:var(--green)}
+
+.lineman-cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin-top:1.5rem}
+.lineman-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;transition:all .3s;animation:cardIn .4s ease}
+@keyframes cardIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+.lineman-card:hover{border-color:var(--border2);box-shadow:0 8px 32px rgba(0,0,0,.3)}
+.lineman-avatar{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--cyan),var(--cyan2));display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:900;color:#000;flex-shrink:0;box-shadow:var(--glow-c);font-family:var(--font-d)}
+.lineman-header{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.lineman-info h3{font-size:1rem;font-weight:700;margin-bottom:2px;font-family:var(--font-d)}
+.lineman-info p{font-size:.72rem;color:var(--text2);font-family:var(--font-m)}
+.lineman-meta{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.lineman-meta-row{display:flex;align-items:center;gap:8px;font-size:.78rem;color:var(--text2)}
+.tc-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.tc-badge{background:rgba(0,200,255,.08);border:1px solid rgba(0,200,255,.2);color:var(--cyan);border-radius:6px;padding:3px 10px;font-size:.72rem;font-family:var(--font-m);font-weight:700;transition:all .2s}
+.tc-badge:hover{background:rgba(0,200,255,.15);box-shadow:0 0 8px rgba(0,200,255,.2)}
+.tc-section-label{font-size:.65rem;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);font-weight:700;margin-bottom:6px;font-family:var(--font-m)}
+.assign-tc{margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.tc-assign-row{display:flex;gap:8px;align-items:center}
+.tc-input-mini{flex:1;background:rgba(0,200,255,.04);border:1px solid var(--border);border-radius:var(--radius2);padding:7px 10px;color:var(--text);font-family:var(--font-m);font-size:.8rem;outline:none;transition:border-color .2s}
+.tc-input-mini:focus{border-color:var(--cyan)}
+.tc-input-mini::placeholder{color:var(--text3)}
+
+/* ===================================
+   PAGE: DANGER ALERTS
+=================================== */
+.alert-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px}
+.alert-card{border-radius:var(--radius);padding:1.25rem;border:1px solid;position:relative;overflow:hidden;transition:all .3s}
+.alert-card.safe{background:rgba(0,255,136,.04);border-color:rgba(0,255,136,.2)}
+.alert-card.warning{background:rgba(255,215,0,.04);border-color:rgba(255,215,0,.2)}
+.alert-card.danger{background:rgba(255,51,102,.06);border-color:rgba(255,51,102,.3);animation:dangerPulse 2s ease-in-out infinite}
+@keyframes dangerPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,51,102,.3)}50%{box-shadow:0 0 0 8px rgba(255,51,102,.05)}}
+.alert-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.tc-id{font-family:var(--font-m);font-size:1.1rem;font-weight:700;letter-spacing:1px}
+.tc-id.safe{color:var(--green)}
+.tc-id.warning{color:var(--yellow)}
+.tc-id.danger{color:var(--red)}
+.alert-detail{font-size:.82rem;color:var(--text2);margin-bottom:7px;display:flex;align-items:flex-start;gap:8px}
+.alert-detail strong{color:var(--text);min-width:65px;flex-shrink:0;font-family:var(--font-m);font-size:.72rem;text-transform:uppercase;letter-spacing:.05em}
+.alert-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.06)}
+.sms-simulation{margin-top:10px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius2);padding:10px;font-family:var(--font-m);font-size:.72rem;color:var(--text2);line-height:1.6;display:none}
+.sms-simulation.show{display:block;animation:fadeUp .3s ease}
+.sensor-visual{width:100%;height:80px;border-radius:var(--radius2);overflow:hidden;position:relative;margin:10px 0;background:var(--bg2);display:flex;align-items:center;justify-content:center}
+.sensor-visual svg{width:100%;height:100%}
+
+/* ===================================
+   PAGE: PUBLIC REPORTING
+=================================== */
+.report-layout{display:grid;grid-template-columns:1fr 1.3fr;gap:2rem;align-items:start}
+@media(max-width:800px){.report-layout{grid-template-columns:1fr}}
+.upload-zone{border:2px dashed var(--border2);border-radius:var(--radius);padding:2rem;text-align:center;cursor:pointer;transition:all .3s;background:rgba(0,200,255,.02)}
+.upload-zone:hover,.upload-zone.drag-over{border-color:var(--cyan);background:rgba(0,200,255,.05)}
+.upload-icon{font-size:2.5rem;margin-bottom:.6rem;display:block}
+.upload-text{font-size:.9rem;color:var(--text2);margin-bottom:4px}
+.upload-hint{font-size:.72rem;color:var(--text3)}
+.preview-img{width:100%;border-radius:var(--radius2);object-fit:cover;max-height:160px;display:none;margin-top:10px}
+.nearest-lineman{background:var(--card2);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;margin-top:1rem;display:none;animation:fadeUp .4s ease}
+.nearest-lineman.show{display:block}
+.lineman-result-avatar{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--cyan),var(--cyan2));display:flex;align-items:center;justify-content:center;font-size:1.4rem;font-weight:900;color:#000;box-shadow:var(--glow-c);font-family:var(--font-d)}
+.lineman-result-header{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.lineman-result-info h3{font-size:1.1rem;font-weight:700;font-family:var(--font-d)}
+.lineman-result-info p{font-size:.78rem;color:var(--text2);font-family:var(--font-m)}
+.call-btn-main{display:flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--green),var(--green2));color:#000;border:none;border-radius:var(--radius2);padding:12px 24px;font-family:var(--font-d);font-size:.78rem;font-weight:700;cursor:pointer;width:100%;justify-content:center;margin-top:12px;transition:all .2s;letter-spacing:.05em;text-transform:uppercase}
+.call-btn-main:hover{box-shadow:var(--glow-g);transform:translateY(-1px)}
+.report-success{display:none;margin-top:10px;padding:12px;background:rgba(0,255,136,.08);border:1px solid rgba(0,255,136,.2);border-radius:var(--radius2);color:var(--green);font-size:.8rem;font-weight:600;text-align:center;animation:fadeUp .3s ease;font-family:var(--font-m)}
+.report-success.show{display:block}
+
+/* ===================================
+   EMERGENCY CARD
+=================================== */
+.emergency-card{background:linear-gradient(135deg,rgba(255,51,102,.08),rgba(255,140,0,.05));border:1px solid rgba(255,51,102,.3);border-radius:var(--radius);padding:2rem;text-align:center}
+.emergency-card .big-icon{font-size:3rem;margin-bottom:.75rem}
+.emergency-card h3{font-family:var(--font-d);font-size:.85rem;color:var(--red);letter-spacing:.1em;margin-bottom:.5rem}
+.phone-number{font-family:var(--font-d);font-size:1.8rem;font-weight:900;color:var(--text);letter-spacing:.05em;margin-bottom:.4rem;text-shadow:0 0 20px rgba(255,51,102,.3)}
+.emergency-card p{font-size:.85rem;color:var(--text2);margin-bottom:1.5rem}
+
+/* ===================================
+   FEEDBACK
+=================================== */
+.feedback-card{background:linear-gradient(135deg,rgba(255,215,0,.05),rgba(0,200,255,.04));border:1px solid rgba(255,215,0,.2);border-radius:var(--radius);padding:2rem;margin-top:1.25rem;position:relative;overflow:hidden}
+.feedback-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--yellow),transparent)}
+.feedback-title{font-family:var(--font-d);font-size:.85rem;font-weight:700;color:var(--yellow);letter-spacing:.08em;margin-bottom:1.25rem;text-shadow:0 0 15px rgba(255,215,0,.4);display:flex;align-items:center;gap:.5rem}
+.star-rating-wrapper{margin-bottom:1.25rem}
+.star-label{font-family:var(--font-m);font-size:.72rem;letter-spacing:.15em;color:var(--yellow);text-transform:uppercase;margin-bottom:.6rem;display:block}
+.stars{display:flex;gap:.5rem;margin-bottom:.6rem}
+.star{font-size:2rem;cursor:pointer;color:var(--text3);transition:all .18s;user-select:none;line-height:1;filter:drop-shadow(0 0 0 transparent)}
+.star:hover{transform:scale(1.2)}
+.star.hovered,.star.selected{color:var(--yellow);filter:drop-shadow(0 0 6px rgba(255,215,0,.7));transform:scale(1.15)}
+.rating-text{font-family:var(--font-m);font-size:.78rem;color:var(--yellow);letter-spacing:.08em;min-height:1.2em;opacity:0;transition:opacity .2s}
+.rating-text.visible{opacity:1}
+.feedback-textarea{width:100%;background:rgba(255,215,0,.03);border:1px solid rgba(255,215,0,.15);border-radius:6px;padding:.85rem 1rem;color:var(--text);font-family:var(--font-b);font-size:.95rem;resize:vertical;min-height:100px;outline:none;transition:all .2s;margin-bottom:1.25rem}
+.feedback-textarea:focus{border-color:var(--yellow);background:rgba(255,215,0,.05);box-shadow:0 0 0 2px rgba(255,215,0,.1)}
+.feedback-textarea::placeholder{color:var(--text3);font-style:italic}
+.success-message{display:none;align-items:center;gap:.75rem;background:rgba(0,255,136,.08);border:1px solid rgba(0,255,136,.3);border-radius:8px;padding:1rem 1.25rem;margin-top:1rem;font-family:var(--font-m);font-size:.8rem;color:var(--green);letter-spacing:.05em;animation:fadeIn .4s ease}
+.success-message.visible{display:flex}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+
+
+/* ===================================
+   PAGE: LIVE MAP (INTERNAL)
+=================================== */
+.map-wrapper{position:relative;border-radius:var(--radius);overflow:hidden;border:1px solid var(--border);height:500px;background:var(--bg3)}
+.sim-map{position:relative;width:100%;height:100%;overflow:hidden}
+.sim-map-bg{position:absolute;inset:0;background:linear-gradient(135deg,#0a1628 0%,#0d1e30 50%,#091422 100%)}
+.map-marker{position:absolute;width:36px;height:36px;transform:translate(-50%,-50%);cursor:pointer;transition:all .3s;z-index:5}
+.map-marker:hover{transform:translate(-50%,-50%) scale(1.2);z-index:10}
+.map-marker-inner{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;font-family:var(--font-m);border:2px solid;transition:all .3s;position:relative}
+.map-marker-inner.safe{background:rgba(0,255,136,.15);border-color:var(--green);color:var(--green);box-shadow:0 0 12px rgba(0,255,136,.3)}
+.map-marker-inner.warning{background:rgba(255,215,0,.15);border-color:var(--yellow);color:var(--yellow);box-shadow:0 0 12px rgba(255,215,0,.3)}
+.map-marker-inner.danger{background:rgba(255,51,102,.2);border-color:var(--red);color:var(--red);box-shadow:0 0 16px rgba(255,51,102,.5);animation:markerPulse 1s ease-in-out infinite}
+@keyframes markerPulse{0%,100%{box-shadow:0 0 8px rgba(255,51,102,.5)}50%{box-shadow:0 0 24px rgba(255,51,102,.8)}}
+.marker-label{position:absolute;top:-22px;left:50%;transform:translateX(-50%);font-family:var(--font-m);font-size:.55rem;font-weight:700;white-space:nowrap;background:rgba(3,7,15,.9);padding:2px 5px;border-radius:3px}
+.map-tooltip{position:absolute;background:rgba(6,14,26,.97);border:1px solid var(--border2);border-radius:var(--radius);padding:14px;width:210px;z-index:30;display:none;font-size:.78rem;box-shadow:0 8px 32px rgba(0,0,0,.5)}
+.map-tooltip.show{display:block;animation:popIn .2s ease}
+@keyframes popIn{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+.map-popup-close{position:absolute;top:8px;right:10px;background:none;border:none;color:var(--text3);cursor:pointer;font-size:1rem}
+.map-tooltip-tc{font-family:var(--font-m);font-size:.9rem;font-weight:700;margin-bottom:8px}
+.map-tooltip-row{display:flex;flex-direction:column;gap:3px;margin-bottom:7px}
+.map-tooltip-row span{color:var(--text3);font-size:.65rem;text-transform:uppercase;letter-spacing:.5px;font-family:var(--font-m)}
+.map-tooltip-row p{color:var(--text)}
+.map-overlay-panel{position:absolute;top:12px;left:12px;background:rgba(3,7,15,.92);backdrop-filter:blur(12px);border:1px solid var(--border);border-radius:var(--radius);padding:14px;width:210px;z-index:10}
+.map-panel-title{font-family:var(--font-m);font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text2);margin-bottom:10px}
+.map-legend-int{display:flex;flex-direction:column;gap:6px}
+.map-alert-list{margin-top:16px;display:flex;flex-direction:column;gap:8px;max-height:200px;overflow-y:auto}
+.map-alert-item{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:10px;font-size:.78rem;transition:all .2s;cursor:pointer}
+.map-alert-item.danger{border-color:rgba(255,51,102,.3);background:rgba(255,51,102,.05)}
+.map-alert-item.warning{border-color:rgba(255,215,0,.2);background:rgba(255,215,0,.03)}
+.map-alert-tc{font-family:var(--font-m);font-weight:700;margin-bottom:4px}
+.map-alert-tc.danger{color:var(--red)}
+.map-alert-tc.warning{color:var(--yellow)}
+.auto-refresh-indicator{display:flex;align-items:center;gap:8px;font-size:.68rem;color:var(--text3);font-family:var(--font-m);margin-top:8px}
+.refresh-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 1.5s infinite}
+
+/* ===================================
+   PAGE: BACKEND DOCS
+=================================== */
+.api-endpoint{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;margin-bottom:12px;transition:all .2s}
+.api-endpoint:hover{border-color:var(--border2)}
+.endpoint-header{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.method-badge{padding:3px 10px;border-radius:4px;font-size:.68rem;font-weight:700;font-family:var(--font-m);letter-spacing:.5px;flex-shrink:0}
+.method-get{background:rgba(0,200,255,.1);color:var(--cyan);border:1px solid rgba(0,200,255,.2)}
+.method-post{background:rgba(0,255,136,.1);color:var(--green);border:1px solid rgba(0,255,136,.2)}
+.method-put{background:rgba(255,215,0,.1);color:var(--yellow);border:1px solid rgba(255,215,0,.2)}
+.method-del{background:rgba(255,51,102,.1);color:var(--red);border:1px solid rgba(255,51,102,.2)}
+.endpoint-path{font-family:var(--font-m);font-size:.85rem;color:var(--text)}
+.endpoint-desc{font-size:.82rem;color:var(--text2);margin-bottom:10px}
+.code-block{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius2);padding:14px;font-family:var(--font-m);font-size:.72rem;color:var(--text2);overflow-x:auto;line-height:1.6}
+.code-block .keyword{color:var(--cyan)}
+.code-block .string{color:var(--green)}
+.code-block .comment{color:var(--text3)}
+.code-block .key{color:var(--yellow)}
+.code-block .dir{color:var(--cyan)}
+.code-block .file{color:var(--text)}
+.install-step{display:flex;gap:14px;padding:14px;background:var(--bg2);border-radius:var(--radius2);border:1px solid var(--border);margin-bottom:8px;align-items:flex-start}
+.install-step-num{width:28px;height:28px;border-radius:50%;background:rgba(0,200,255,.1);border:1px solid rgba(0,200,255,.3);display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:700;color:var(--cyan);flex-shrink:0;font-family:var(--font-d)}
+.install-step-content h4{font-size:.85rem;font-weight:700;margin-bottom:4px;font-family:var(--font-d)}
+.install-step-content p{font-size:.78rem;color:var(--text2);font-family:var(--font-m)}
+
+/* ===================================
+   TICKER
+=================================== */
+.ticker{font-family:var(--font-m);font-size:.7rem;color:var(--text3);letter-spacing:.1em;overflow:hidden;white-space:nowrap;border-top:1px solid var(--border);padding:.6rem 0;position:relative;z-index:1}
+.ticker-inner{display:inline-block;animation:tickerScroll 35s linear infinite}
+@keyframes tickerScroll{from{transform:translateX(100vw)}to{transform:translateX(-100%)}}
+
+/* ===================================
+   FOOTER
+=================================== */
+footer{position:relative;z-index:1;border-top:1px solid var(--border);padding:2rem;text-align:center;font-family:var(--font-m);font-size:.72rem;color:var(--text3);letter-spacing:.1em}
+
+/* ===================================
+   VALIDATION SHAKE
+=================================== */
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.shake{animation:shake .4s ease}
+
+/* ===================================
+   MISC
+=================================== */
+.how-it-works-step{display:flex;gap:12px;align-items:flex-start}
+.hiw-num{width:28px;height:28px;border-radius:50%;background:rgba(0,200,255,.1);border:1px solid rgba(0,200,255,.3);display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:700;color:var(--cyan);flex-shrink:0;font-family:var(--font-d)}
+.hiw-text h4{font-size:.85rem;font-weight:700;margin-bottom:2px}
+.hiw-text p{font-size:.78rem;color:var(--text2)}
+
+/* ===================================
+   PAGE: TC TELEMETRY
+=================================== */
+.telemetry-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+@media(max-width:900px){
+  .telemetry-layout {
+    grid-template-columns: 1fr;
+  }
+}
+.telemetry-tc-item {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius2);
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+  margin-bottom: 8px;
+}
+.telemetry-tc-item:hover {
+  background: var(--card2);
+  border-color: var(--border2);
+}
+.telemetry-tc-item.active {
+  border-color: var(--cyan);
+  background: rgba(0, 200, 255, 0.08);
+  box-shadow: 0 0 10px rgba(0, 200, 255, 0.2);
+}
+.telemetry-tc-details h4 {
+  font-family: var(--font-d);
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.telemetry-tc-details p {
+  font-size: 0.7rem;
+  color: var(--text2);
+  margin-top: 2px;
+}
+</style>
+</head>
+<body>
+
+<div class="animated-glow"></div>
+<div id="toast-container"></div>
+
+<!-- ===== NAV ===== -->
+<nav>
+  <div class="nav-logo">⚡ <span>POWER</span>GRID<span style="color:var(--cyan)">GUARDIAN</span></div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showPage('home',this)"><span class="dot"></span>Home</button>
+    <button class="nav-tab" onclick="showPage('reg',this)"><span class="dot"></span>Line Man Reg</button>
+    <button class="nav-tab" onclick="showPage('telemetry',this)"><span class="dot"></span>TC Telemetry</button>
+    <button class="nav-tab" onclick="showPage('alerts',this)"><span class="dot"></span>Danger Alerts</button>
+    <button class="nav-tab" onclick="showPage('report',this)"><span class="dot"></span>Public Report</button>
+    <button class="nav-tab" onclick="showPage('livemap',this)"><span class="dot"></span>Live Map</button>
+    <button class="nav-tab" onclick="showPage('about',this)"><span class="dot"></span>About</button>
+    <button class="nav-tab" onclick="showPage('backend',this)"><span class="dot"></span>Backend Docs</button>
+  </div>
+</nav>
+
+<main>
+
+<!-- ===================================================
+     PAGE: HOME
+=================================================== -->
+<div id="page-home" class="page active">
+  <section class="hero">
+    <div class="hero-glow"></div>
+    <div class="hero-badge">⚡ LIVE GRID MONITORING SYSTEM</div>
+    <h1>
+      <div class="line1">PROTECT YOUR</div>
+      <div class="line2">POWER NETWORK</div>
+    </h1>
+    <p class="hero-sub">Real-time electrical grid surveillance, fault detection, rapid response coordination, and line man management for critical infrastructure.</p>
+    <div class="hero-buttons">
+      <button class="btn btn-primary" onclick="showPage('report',document.querySelectorAll('.nav-tab')[4])">⚠ Report Fault</button>
+      <button class="btn btn-secondary" onclick="showPage('telemetry',document.querySelectorAll('.nav-tab')[2])">📊 TC Telemetry</button>
+      <button class="btn btn-secondary" onclick="showPage('reg',document.querySelectorAll('.nav-tab')[1])">👷 Line Man Register</button>
+    </div>
+    <div class="status-bar">
+      <div class="status-item"><div class="status-dot dot-green"></div> GRID ONLINE — 98.4% UPTIME</div>
+      <div class="status-item"><div class="status-dot dot-orange"></div> 3 ACTIVE INCIDENTS</div>
+      <div class="status-item"><div class="status-dot dot-red"></div> ZONE 7 — CRITICAL</div>
+      <div class="status-item" style="color:var(--text3)">LAST SYNC: <span id="clock" style="color:var(--cyan)">--:--:--</span></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-line"></div>
+    <h2 class="section-title">SYSTEM <em>CAPABILITIES</em></h2>
+    <p class="section-sub">// Advanced monitoring and rapid-response infrastructure for the modern grid</p>
+    <div class="card-grid">
+      <div class="card"><span class="card-icon">🛰️</span><div class="card-title">REAL-TIME MONITORING</div><p class="card-text">Continuous surveillance of all grid nodes with sub-second fault detection and automated alert broadcasting.</p></div>
+      <div class="card"><span class="card-icon">⚡</span><div class="card-title">FAULT DETECTION</div><p class="card-text">AI-assisted anomaly recognition across voltage, current, and frequency parameters for predictive failure prevention.</p></div>
+      <div class="card"><span class="card-icon">🚨</span><div class="card-title">RAPID DISPATCH</div><p class="card-text">Automated line crew deployment with GPS routing and priority escalation protocols for minimal outage duration.</p></div>
+      <div class="card"><span class="card-icon">👷</span><div class="card-title">LINE MAN MANAGEMENT</div><p class="card-text">Full registration, transformer assignment, GPS tracking, and contact management for all field technicians.</p></div>
+      <div class="card"><span class="card-icon">🔐</span><div class="card-title">SECURE COMM</div><p class="card-text">End-to-end encrypted communications between field crews, dispatch centers, and management operations.</p></div>
+      <div class="card"><span class="card-icon">🌐</span><div class="card-title">PUBLIC PORTAL</div><p class="card-text">Transparent outage reporting, estimated restoration times, and direct feedback channels for affected citizens.</p></div>
+    </div>
+  </section>
+</div>
+
+<!-- ===================================================
+     PAGE: LINE MAN REGISTRATION
+=================================================== -->
+<div id="page-reg" class="page">
+<div class="section-sm">
+  <div class="section-line"></div>
+  <h2 class="section-title">Line Man <em>Registration</em></h2>
+  <p class="section-sub">// Register field technicians and assign transformer circuits</p>
+
+  <div class="stats-row" id="stats-row">
+    <div class="stat-card"><div class="stat-value val-cyan" id="stat-total">0</div><div class="stat-label">Total Line Men</div></div>
+    <div class="stat-card"><div class="stat-value val-green" id="stat-tcs">0</div><div class="stat-label">Assigned TCs</div></div>
+    <div class="stat-card"><div class="stat-value val-red" id="stat-active">0</div><div class="stat-label">Active Alerts</div></div>
+  </div>
+
+  <div class="grid-2">
+    <!-- Registration Form -->
+    <div class="card">
+      <div class="card-title">⚡ Register New Line Man <span class="badge">FORM</span></div>
+      <div class="step-indicators">
+        <div class="step active" id="step1"><div class="step-num">1</div><div class="step-label">Details</div></div>
+        <div class="step" id="step2"><div class="step-num">2</div><div class="step-label">Location</div></div>
+        <div class="step" id="step3"><div class="step-num">3</div><div class="step-label">Assign TCs</div></div>
+      </div>
+      <!-- Step 1 -->
+      <div id="form-step1">
+        <div class="form-group"><label class="form-label">Line Man Name</label><input class="form-input" id="inp-name" type="text" placeholder="e.g. Rajesh Kumar" autocomplete="off"/><span class="form-error" id="err-name">Name is required (min 2 chars)</span></div>
+        <div class="form-group"><label class="form-label">Phone Number</label><input class="form-input" id="inp-phone" type="tel" placeholder="e.g. +91 98765 43210" autocomplete="off"/><span class="form-error" id="err-phone">Enter a valid phone number (10–15 digits)</span></div>
+        <div class="form-group"><label class="form-label">Email Address</label><input class="form-input" id="inp-email" type="email" placeholder="e.g. rajesh@powergrid.com" autocomplete="off"/><span class="form-error" id="err-email">Enter a valid email address</span></div>
+        <button class="btn btn-primary" style="margin-top:8px" onclick="nextStep1()">Continue to Location →</button>
+      </div>
+      <!-- Step 2 -->
+      <div id="form-step2" style="display:none">
+        <div class="form-group"><label class="form-label">Exact Location</label><input class="form-input" id="inp-location" type="text" placeholder="e.g. Sector 14, Block A, Chennai" autocomplete="off"/><span class="form-error" id="err-location">Location is required</span></div>
+        <div class="form-group">
+          <label class="form-label">GPS Coordinates (optional)</label>
+          <div style="display:flex;gap:8px">
+            <input class="form-input" id="inp-lat" type="text" placeholder="Latitude" style="flex:1"/>
+            <input class="form-input" id="inp-lng" type="text" placeholder="Longitude" style="flex:1"/>
+            <button class="btn btn-ghost btn-sm" onclick="getGPS()" title="Auto-detect GPS" style="flex-shrink:0;padding:0 12px">📍</button>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button class="btn btn-ghost" onclick="prevStep()">← Back</button>
+          <button class="btn btn-primary" style="flex:1" onclick="nextStep2()">Continue to TCs →</button>
+        </div>
+      </div>
+      <!-- Step 3 -->
+      <div id="form-step3" style="display:none">
+        <div class="form-group">
+          <label class="form-label">Transformer IDs <span style="color:var(--text3);font-size:.68rem">(Assign up to 3)</span></label>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <input class="form-input" id="inp-tc1" type="text" placeholder="TC101" autocomplete="off" style="font-family:var(--font-m)"/>
+            <input class="form-input" id="inp-tc2" type="text" placeholder="TC102" autocomplete="off" style="font-family:var(--font-m)"/>
+            <input class="form-input" id="inp-tc3" type="text" placeholder="TC103" autocomplete="off" style="font-family:var(--font-m)"/>
+          </div>
+          <span class="form-error" id="err-tcs">At least 1 TC ID is required</span>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button class="btn btn-ghost" onclick="prevStep2()">← Back</button>
+          <button class="btn btn-success" style="flex:1" onclick="registerLineman()">✓ Register Line Man</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Preview & Quick Stats -->
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="card" id="preview-card">
+        <div class="card-title">👁 Live Preview</div>
+        <div style="color:var(--text3);font-size:.85rem;text-align:center;padding:20px 0" id="preview-empty">Fill in the form to see a preview</div>
+        <div id="preview-content" style="display:none">
+          <div class="lineman-header">
+            <div class="lineman-avatar" id="prev-avatar">?</div>
+            <div class="lineman-info">
+              <h3 id="prev-name" style="font-size:.95rem">—</h3>
+              <p id="prev-phone">—</p>
+            </div>
+          </div>
+          <div class="lineman-meta">
+            <div class="lineman-meta-row"><span>📧</span><span id="prev-email">—</span></div>
+            <div class="lineman-meta-row"><span>📍</span><span id="prev-location">—</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">📊 Quick Stats <span class="badge">LIVE</span></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div style="background:var(--bg2);border-radius:8px;padding:12px;text-align:center"><div style="font-size:1.4rem;font-weight:900;color:var(--cyan);font-family:var(--font-d)" id="qs-total">0</div><div style="font-size:.65rem;color:var(--text3);text-transform:uppercase;margin-top:2px;font-family:var(--font-m)">Line Men</div></div>
+          <div style="background:var(--bg2);border-radius:8px;padding:12px;text-align:center"><div style="font-size:1.4rem;font-weight:900;color:var(--green);font-family:var(--font-d)" id="qs-tcs">0</div><div style="font-size:.65rem;color:var(--text3);text-transform:uppercase;margin-top:2px;font-family:var(--font-m)">Total TCs</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+    <div style="font-size:1rem;font-weight:700;font-family:var(--font-d)">Registered Line Men <span id="lm-count" style="color:var(--cyan);font-family:var(--font-m)"></span></div>
+    <button class="btn btn-ghost btn-sm" onclick="clearAll()">Clear All</button>
+  </div>
+  <div class="lineman-cards-grid" id="lineman-cards">
+    <div class="empty-state" id="no-lineman"><span class="icon">👷</span><p>No line men registered yet.<br>Use the form above to get started.</p></div>
+  </div>
+</div>
+</div>
+
+<!-- ===================================================
+     PAGE: TC TELEMETRY
+=================================================== -->
+<div id="page-telemetry" class="page">
+<div class="section-sm">
+  <div class="section-line"></div>
+  <h2 class="section-title">TC Telemetry &amp; <em>Real-Time Monitoring</em></h2>
+  <p class="section-sub">// Grid IoT sensor readings for temperature and output current load</p>
+
+  <div class="telemetry-layout">
+    <!-- Left Sidebar: Active Transformers & Diagnostics -->
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <!-- Active Transformers -->
+      <div class="card">
+        <div class="card-title">🔌 ACTIVE TRANSFORMERS <span class="badge" id="telemetry-active-count">4 Online</span></div>
+        <div style="display:flex;flex-direction:column;gap:8px" id="telemetry-tc-list">
+          <!-- Dynamically populated from registered TCs or default set -->
+        </div>
+      </div>
+      
+      <!-- System Diagnostics -->
+      <div class="card">
+        <div class="card-title">🖥️ SYSTEM DIAGNOSTICS</div>
+        <div style="display:flex;flex-direction:column;gap:8px;font-size:0.8rem;color:var(--text2);font-family:var(--font-m)">
+          <div style="display:flex;justify-content:space-between"><span>ESP32 Transmitters:</span><span style="color:var(--green)">4 Active</span></div>
+          <div style="display:flex;justify-content:space-between"><span>Database Server:</span><span style="color:var(--text3)">Offline (Fallback)</span></div>
+          <div style="display:flex;justify-content:space-between"><span>AI Inference Model:</span><span style="color:var(--green)">Active (V3.2)</span></div>
+        </div>
+      </div>
+      
+      <!-- Simulator controls -->
+      <div class="card">
+        <div class="card-title">⚙️ IoT SIMULATION CONTROLS</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <button class="btn btn-secondary btn-sm" id="btn-toggle-sim" onclick="toggleTelemetrySimulation()">Pause Simulation</button>
+          <button class="btn btn-danger btn-sm" onclick="triggerTelemetrySpike('temp')">🔥 Spike Core Temp</button>
+          <button class="btn btn-warning btn-sm" onclick="triggerTelemetrySpike('current')">⚡ Overload Current</button>
+          <button class="btn btn-success btn-sm" onclick="resetTelemetrySimulation()">✓ Reset to Normal</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Right Sidebar/Main Area -->
+    <div style="position:relative; flex:1">
+      <div class="card empty-state" id="telemetry-empty-state" style="display:none; padding:4rem 2rem">
+        <span class="icon">🔌</span>
+        <p>No active transformers registered.<br>Assign a transformer ID (e.g. TC101) to a lineman under registration to monitor telemetry.</p>
+      </div>
+      
+      <!-- Main Content Area: Status & Gauges -->
+      <div id="telemetry-main-panel" style="display:flex;flex-direction:column;gap:16px">
+      <!-- Current State Header and Status Alert -->
+      <div class="card" style="padding:1.25rem">
+        <div class="form-label" style="font-size:0.75rem" id="telemetry-current-tc-header">CURRENT STATE - T-101</div>
+        <div id="telemetry-status-box" style="display:flex;align-items:center;gap:12px;margin-top:10px;padding:12px;border-radius:var(--radius2);background:rgba(0,255,136,0.06);border:1px solid rgba(0,255,136,0.2)">
+          <div style="width:36px;height:36px;border-radius:50%;background:rgba(0,255,136,0.15);border:1px solid var(--green);display:flex;align-items:center;justify-content:center;color:var(--green);font-size:1.2rem;flex-shrink:0;font-weight:700" id="telemetry-status-icon">✓</div>
+          <div>
+            <h3 style="font-size:0.95rem;font-family:var(--font-d);font-weight:700" id="telemetry-status-title">System Status: Normal Operations</h3>
+            <p style="font-size:0.78rem;color:var(--text2)" id="telemetry-status-desc">All transformer sensors reporting stable metrics below warning thresholds.</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Gauges Grid -->
+      <div class="grid-2">
+        <!-- Core Temperature -->
+        <div class="card" style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem">
+          <div class="card-title" style="align-self:flex-start;width:100%"><span style="margin-right:6px">🌡️</span>Core Temperature <span style="font-size:0.65rem;color:var(--text3);margin-left:auto;font-family:var(--font-m)">DS18B20 Sensor</span></div>
+          
+          <!-- Gauge SVG -->
+          <div style="position:relative;width:180px;height:140px;margin-top:1rem">
+            <svg viewBox="0 0 160 160" style="width:100%;height:100%">
+              <!-- Background track -->
+              <circle cx="80" cy="80" r="55" fill="none" stroke="var(--bg3)" stroke-width="12" stroke-dasharray="259 345" stroke-linecap="round" transform="rotate(135 80 80)"/>
+              <!-- Filled track -->
+              <circle id="temp-gauge-fill" cx="80" cy="80" r="55" fill="none" stroke="var(--green)" stroke-width="12" stroke-dasharray="259 345" stroke-dashoffset="259" stroke-linecap="round" transform="rotate(135 80 80)" style="transition: stroke-dashoffset 0.4s ease, stroke 0.4s ease;"/>
+            </svg>
+            <div style="position:absolute;top:45%;left:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center">
+              <span id="temp-gauge-value" style="font-family:var(--font-d);font-size:2rem;font-weight:900;line-height:1;color:var(--text)">43.0</span>
+              <span style="font-family:var(--font-m);font-size:0.75rem;color:var(--text2);margin-top:2px">°C</span>
+            </div>
+          </div>
+          
+          <div style="display:flex;justify-content:between;width:100%;font-size:0.75rem;color:var(--text2);border-top:1px solid var(--border);padding-top:10px;margin-top:10px">
+            <span>Safe Limit: 80°C</span>
+            <span id="temp-gauge-status" style="color:var(--green);font-weight:700">Stable</span>
+          </div>
+        </div>
+        
+        <!-- Output Current Load -->
+        <div class="card" style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem">
+          <div class="card-title" style="align-self:flex-start;width:100%"><span style="margin-right:6px">⚡</span>Output Current Load <span style="font-size:0.65rem;color:var(--text3);margin-left:auto;font-family:var(--font-m)">SCT-013 Clamp</span></div>
+          
+          <!-- Gauge SVG -->
+          <div style="position:relative;width:180px;height:140px;margin-top:1rem">
+            <svg viewBox="0 0 160 160" style="width:100%;height:100%">
+              <!-- Background track -->
+              <circle cx="80" cy="80" r="55" fill="none" stroke="var(--bg3)" stroke-width="12" stroke-dasharray="259 345" stroke-linecap="round" transform="rotate(135 80 80)"/>
+              <!-- Filled track -->
+              <circle id="current-gauge-fill" cx="80" cy="80" r="55" fill="none" stroke="var(--cyan)" stroke-width="12" stroke-dasharray="259 345" stroke-dashoffset="259" stroke-linecap="round" transform="rotate(135 80 80)" style="transition: stroke-dashoffset 0.4s ease, stroke 0.4s ease;"/>
+            </svg>
+            <div style="position:absolute;top:45%;left:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center">
+              <span id="current-gauge-value" style="font-family:var(--font-d);font-size:2rem;font-weight:900;line-height:1;color:var(--text)">8.5</span>
+              <span style="font-family:var(--font-m);font-size:0.75rem;color:var(--text2);margin-top:2px">A</span>
+            </div>
+          </div>
+          
+          <div style="display:flex;justify-content:between;width:100%;font-size:0.75rem;color:var(--text2);border-top:1px solid var(--border);padding-top:10px;margin-top:10px">
+            <span>Overload: 18.0A</span>
+            <span id="current-gauge-status" style="color:var(--green);font-weight:700">Stable</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+<!-- ===================================================
+     PAGE: DANGER ALERTS
+=================================================== -->
+<div id="page-alerts" class="page">
+<div class="section-sm">
+  <div class="section-line"></div>
+  <h2 class="section-title">Danger <em>Alert</em> System</h2>
+  <p class="section-sub">// Real-time sensor monitoring with automated response</p>
+
+  <div class="grid-2" style="margin-bottom:1.5rem">
+    <div class="card">
+      <div class="card-title">🔬 Simulate Sensor Alert</div>
+      <div class="form-group"><label class="form-label">TC ID</label><input class="form-input" id="sim-tc" type="text" placeholder="e.g. TC101" style="font-family:var(--font-m)"/></div>
+      <div class="form-group">
+        <label class="form-label">Problem Type</label>
+        <select class="form-select" id="sim-problem">
+          <option value="Voltage Fluctuation">📈 Voltage Fluctuation</option>
+          <option value="Temperature">🌡️ Temperature</option>
+          <option value="Over Load">⚡ Over Load</option>
+          <option value="Overheating">🔥 Overheating</option>
+          <option value="Short Circuit">💥 Short Circuit</option>
+          <option value="Winding Stress">🌀 Winding Stress</option>
+          <option value="Insulation Damage">🛡️ Insulation Damage</option>
+          <option value="Oil Heating">💧 Oil Heating</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Severity</label>
+        <select class="form-select" id="sim-severity">
+          <option value="safe">✅ Safe</option>
+          <option value="warning">⚠ Warning</option>
+          <option value="danger" selected>🔴 Danger</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">TC Location (for map link)</label><input class="form-input" id="sim-location" type="text" placeholder="e.g. Sector 14, Chennai" autocomplete="off"/></div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-danger" style="flex:1" onclick="triggerAlert()">⚡ Trigger Alert</button>
+        <button class="btn btn-ghost" onclick="clearAlerts()">Clear</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">📡 Sensor Status Overview</div>
+      <div id="sensor-overview" style="display:flex;flex-direction:column;gap:10px">
+        <div style="color:var(--text3);font-size:.85rem;text-align:center;padding:20px">Trigger alerts to see sensor data here</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+  <div style="font-size:1rem;font-weight:700;margin-bottom:1rem;font-family:var(--font-d)">Active Alerts <span id="alert-count" style="color:var(--red);font-family:var(--font-m)"></span></div>
+  <div class="alert-grid" id="alert-grid">
+    <div class="empty-state" id="no-alerts"><span class="icon">🛡️</span><p>No alerts triggered.<br>All systems nominal.</p></div>
+  </div>
+</div>
+</div>
+
+<!-- ===================================================
+     PAGE: PUBLIC REPORTING
+=================================================== -->
+<div id="page-report" class="page">
+<div class="section-sm">
+  <div class="section-line"></div>
+  <h2 class="section-title">Public <em>Reporting</em></h2>
+  <p class="section-sub">// Report a power fault, outage, or electrical hazard in your area</p>
+
+  <div class="report-layout">
+    <!-- LEFT: Info + Emergency + Feedback -->
+    <div>
+      <div class="card" style="margin-bottom:1rem">
+        <div class="card-title">📍 HOW IT WORKS</div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div class="how-it-works-step"><div class="hiw-num">1</div><div class="hiw-text"><h4>Enter TC Number</h4><p>Found on the transformer nameplate</p></div></div>
+          <div class="how-it-works-step"><div class="hiw-num">2</div><div class="hiw-text"><h4>Share Your Location</h4><p>Helps dispatch the nearest technician</p></div></div>
+          <div class="how-it-works-step"><div class="hiw-num">3</div><div class="hiw-text"><h4>Upload a Photo</h4><p>Visual evidence speeds up diagnosis</p></div></div>
+          <div class="how-it-works-step"><div class="hiw-num">4</div><div class="hiw-text"><h4>Get Immediate Help</h4><p>Nearest line man is alerted instantly</p></div></div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:1rem">
+        <div class="card-title">⏱ RESPONSE TIMES</div>
+        <p class="card-text">Critical faults: &lt;30 min · Standard: 1–3 hrs · Low priority: Next business day. Response times may vary during severe weather.</p>
+      </div>
+
+      <div class="emergency-card">
+        <div class="big-icon">📞</div>
+        <h3>EMERGENCY HOTLINE</h3>
+        <div class="phone-number">1-800-PWR-GRID</div>
+        <p>Available 24/7 for life-threatening electrical emergencies</p>
+        <button class="btn btn-danger btn-lg">📲 CALL LINE MAN NOW</button>
+      </div>
+
+      <!-- FEEDBACK SECTION -->
+      <div class="feedback-card" id="feedbackSection">
+        <div class="feedback-title">⭐ Line Man Feedback</div>
+        <div class="star-rating-wrapper">
+          <span class="star-label">Rate Your Experience</span>
+          <div class="stars" id="starContainer">
+            <span class="star" data-val="1">★</span>
+            <span class="star" data-val="2">★</span>
+            <span class="star" data-val="3">★</span>
+            <span class="star" data-val="4">★</span>
+            <span class="star" data-val="5">★</span>
+          </div>
+          <div class="rating-text" id="ratingText"></div>
+        </div>
+        <div class="form-group">
+          <span class="star-label" style="color:var(--yellow)">Your Comments</span>
+          <textarea id="feedbackText" class="feedback-textarea" placeholder="Line man came quickly and solved the issue properly..."></textarea>
+        </div>
+        <button class="btn btn-gold" onclick="submitFeedback()">✅ Submit Feedback</button>
+        <div class="success-message" id="successMsg"><span style="font-size:1.3rem">✅</span> Feedback Submitted Successfully</div>
+      </div>
+    </div>
+
+    <!-- RIGHT: TC-based report form + Submit fault form -->
+    <div>
+      <!-- TC Report (internal) -->
+      <div class="card" style="margin-bottom:1.5rem">
+        <div class="card-title">📋 Submit TC Issue Report</div>
+        <div class="form-group"><label class="form-label">Transformer Number (TC ID)</label><input class="form-input" id="rep-tc" type="text" placeholder="e.g. TC101" style="font-family:var(--font-m)" autocomplete="off"/><span class="form-error" id="rep-err-tc">Please enter a TC ID</span></div>
+        <div class="form-group"><label class="form-label">Your Location</label><input class="form-input" id="rep-loc" type="text" placeholder="Enter your current location" autocomplete="off"/><button class="btn btn-ghost btn-sm" onclick="getRepGPS()" style="margin-top:6px;width:100%">📍 Auto-detect My Location</button><span class="form-error" id="rep-err-loc">Please enter your location</span></div>
+        <div class="form-group"><label class="form-label">Issue Description</label><textarea class="form-input" id="rep-desc" rows="3" placeholder="Describe what you see... (sparks, burning smell, noise, etc.)" style="resize:vertical"></textarea></div>
+        <div class="form-group">
+          <label class="form-label">Upload Photo of Issue</label>
+          <div class="upload-zone" id="upload-zone" onclick="document.getElementById('rep-photo').click()" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="handleDrop(event)">
+            <span class="upload-icon">📷</span>
+            <div class="upload-text">Click to upload or drag &amp; drop</div>
+            <div class="upload-hint">JPG, PNG, HEIC up to 10MB</div>
+            <input type="file" id="rep-photo" accept="image/*" style="display:none" onchange="handlePhotoUpload(event)"/>
+          </div>
+          <img id="preview-photo" class="preview-img" alt="Issue preview"/>
+        </div>
+        <button class="btn btn-primary btn-lg" onclick="submitReport()">📤 Submit TC Report</button>
+        <div class="report-success" id="report-success">✅ Report sent successfully to Line Man</div>
+        <div class="nearest-lineman" id="nearest-lineman">
+          <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--green);margin-bottom:12px;display:flex;align-items:center;gap:6px"><span class="pulse pulse-green"></span> Nearest Line Man Found</div>
+          <div class="lineman-result-header">
+            <div class="lineman-result-avatar" id="res-avatar">R</div>
+            <div class="lineman-result-info"><h3 id="res-name">—</h3><p id="res-tc">Assigned: —</p></div>
+          </div>
+          <div style="background:var(--bg2);border-radius:var(--radius2);padding:12px;margin-bottom:12px"><div style="font-size:.68rem;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;font-family:var(--font-m)">Contact</div><div style="font-family:var(--font-m);font-size:.95rem;font-weight:700;color:var(--text)" id="res-phone">—</div></div>
+          <button class="call-btn-main" id="call-btn" onclick="simulateCall()">📞 Call Line Man Now</button>
+          <div style="margin-top:10px;padding:10px;background:rgba(0,200,255,.05);border:1px solid rgba(0,200,255,.1);border-radius:var(--radius2);font-size:.72rem;color:var(--text2);font-family:var(--font-m)" id="sms-sent-msg" style="display:none"></div>
+        </div>
+      </div>
+
+      <!-- General Fault Report -->
+      <div class="card">
+        <div class="card-title">⚡ SUBMIT GENERAL FAULT REPORT</div>
+        <div class="form-group"><label class="form-label">Full Name</label><input type="text" class="form-input" placeholder="John Doe"/></div>
+        <div class="form-group"><label class="form-label">Contact Number</label><input type="tel" class="form-input" placeholder="+1 555 000 0000"/></div>
+        <div class="form-group"><label class="form-label">Street Address / Zone</label><input type="text" class="form-input" placeholder="123 Main St, Zone 7"/></div>
+        <div class="form-group">
+          <label class="form-label">Fault Type</label>
+          <select class="form-select">
+            <option value="">— Select Fault Type —</option>
+            <option>Complete Power Outage</option>
+            <option>Intermittent Power Cuts</option>
+            <option>Damaged Power Lines</option>
+            <option>Sparking / Fire Hazard</option>
+            <option>Transformer Noise / Burning Smell</option>
+            <option>Streetlight Fault</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Severity</label>
+          <select class="form-select">
+            <option value="">— Select Severity —</option>
+            <option>🔴 Critical — Immediate Danger</option>
+            <option>🟠 High — Major Disruption</option>
+            <option>🟡 Medium — Partial Power Loss</option>
+            <option>🟢 Low — Minor Issue</option>
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label">Description</label><textarea class="form-textarea" placeholder="Describe what you see, when it started, and any additional details..."></textarea></div>
+        <button class="btn btn-primary btn-lg" onclick="toast('General fault report submitted!','success')">⚡ SUBMIT REPORT</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+
+<!-- ===================================================
+     PAGE: LIVE MAP (INTERNAL TC MAP)
+=================================================== -->
+<div id="page-livemap" class="page">
+<div class="section-sm">
+  <div class="section-line"></div>
+  <h2 class="section-title">Live Map <em>Alert</em> View</h2>
+  <p class="section-sub">// Real-time transformer monitoring across all zones</p>
+
+  <div class="grid-2" style="gap:16px;align-items:start">
+    <div style="grid-column:1/-1">
+      <div class="map-wrapper">
+        <div class="sim-map" id="sim-map">
+          <div class="sim-map-bg"></div>
+          <svg class="map-roads" viewBox="0 0 900 500" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" style="position:absolute;inset:0;width:100%;height:100%">
+            <line x1="0" y1="250" x2="900" y2="250" stroke="rgba(30,48,80,.6)" stroke-width="18"/>
+            <line x1="450" y1="0" x2="450" y2="500" stroke="rgba(30,48,80,.6)" stroke-width="18"/>
+            <line x1="0" y1="130" x2="900" y2="130" stroke="rgba(30,48,80,.4)" stroke-width="10"/>
+            <line x1="0" y1="380" x2="900" y2="380" stroke="rgba(30,48,80,.4)" stroke-width="10"/>
+            <line x1="200" y1="0" x2="200" y2="500" stroke="rgba(30,48,80,.4)" stroke-width="10"/>
+            <line x1="700" y1="0" x2="700" y2="500" stroke="rgba(30,48,80,.4)" stroke-width="10"/>
+            <text x="100" y="125" fill="rgba(74,106,138,.5)" font-size="9" font-family="monospace">SECTOR 12 RD</text>
+            <text x="100" y="375" fill="rgba(74,106,138,.5)" font-size="9" font-family="monospace">RING ROAD</text>
+            <text x="205" y="20" fill="rgba(74,106,138,.5)" font-size="9" font-family="monospace">MAIN BLVD</text>
+            <text x="705" y="20" fill="rgba(74,106,138,.5)" font-size="9" font-family="monospace">EAST AVE</text>
+            <rect x="20" y="20" width="160" height="90" rx="4" fill="rgba(19,30,46,.4)" stroke="rgba(30,48,80,.3)" stroke-width="1"/>
+            <rect x="220" y="20" width="200" height="90" rx="4" fill="rgba(19,30,46,.4)" stroke="rgba(30,48,80,.3)" stroke-width="1"/>
+            <rect x="460" y="20" width="210" height="90" rx="4" fill="rgba(19,30,46,.4)" stroke="rgba(30,48,80,.3)" stroke-width="1"/>
+            <rect x="720" y="20" width="160" height="90" rx="4" fill="rgba(19,30,46,.4)" stroke="rgba(30,48,80,.3)" stroke-width="1"/>
+            <rect x="20" y="150" width="160" height="80" rx="4" fill="rgba(19,30,46,.4)" stroke="rgba(30,48,80,.3)" stroke-width="1"/>
+            <rect x="220" y="150" width="200" height="80" rx="4" fill="rgba(19,30,46,.4)" stroke="rgba(30,48,80,.3)" stroke-width="1"/>
+            <rect x="460" y="150" width="210" height="80" rx="4" fill="rgba(19,30,46,.4)" stroke="rgba(30,48,80,.3)" stroke-width="1"/>
+            <rect x="720" y="150" width="160" height="80" rx="4" fill="rgba(19,30,46,.4)" stroke="rgba(30,48,80,.3)" stroke-width="1"/>
+            <rect x="20" y="270" width="160" height="90" rx="4" fill="rgba(19,30,46,.4)" stroke="rgba(30,48,80,.3)" stroke-width="1"/>
+            <rect x="220" y="270" width="200" height="90" rx="4" fill="rgba(19,30,46,.4)" stroke="rgba(30,48,80,.3)" stroke-width="1"/>
+            <rect x="460" y="270" width="210" height="90" rx="4" fill="rgba(19,30,46,.4)" stroke="rgba(30,48,80,.3)" stroke-width="1"/>
+            <rect x="720" y="270" width="160" height="90" rx="4" fill="rgba(19,30,46,.4)" stroke="rgba(30,48,80,.3)" stroke-width="1"/>
+            <rect x="20" y="400" width="160" height="80" rx="4" fill="rgba(19,30,46,.4)" stroke="rgba(30,48,80,.3)" stroke-width="1"/>
+            <rect x="220" y="400" width="200" height="80" rx="4" fill="rgba(19,30,46,.4)" stroke="rgba(30,48,80,.3)" stroke-width="1"/>
+            <rect x="460" y="400" width="210" height="80" rx="4" fill="rgba(19,30,46,.4)" stroke="rgba(30,48,80,.3)" stroke-width="1"/>
+            <rect x="720" y="400" width="160" height="80" rx="4" fill="rgba(19,30,46,.4)" stroke="rgba(30,48,80,.3)" stroke-width="1"/>
+          </svg>
+          <div id="map-markers"></div>
+          <div class="map-tooltip" id="map-tooltip">
+            <button class="map-popup-close" onclick="hideTooltip()">✕</button>
+            <div class="map-tooltip-tc" id="tt-tcid">TC101</div>
+            <div class="map-tooltip-row"><span>Status</span><p id="tt-status">—</p></div>
+            <div class="map-tooltip-row"><span>Problem</span><p id="tt-problem">—</p></div>
+            <div class="map-tooltip-row"><span>Solution</span><p id="tt-solution">—</p></div>
+            <div style="margin-top:8px"><a id="tt-maps-link" href="#" target="_blank" class="btn btn-ghost btn-sm" style="width:100%;justify-content:center">🗺 Open in Google Maps</a></div>
+          </div>
+        </div>
+        <div class="map-overlay-panel">
+          <div class="map-panel-title">🗺 Map Legend</div>
+          <div class="map-legend-int">
+            <div class="legend-item"><div class="legend-dot" style="background:var(--green);border-radius:50%;box-shadow:0 0 6px var(--green)"></div>Safe / Normal</div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--yellow);border-radius:50%;box-shadow:0 0 6px var(--yellow)"></div>Warning</div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--red);border-radius:50%;box-shadow:0 0 6px var(--red)"></div>Danger / Critical</div>
+          </div>
+          <div class="auto-refresh-indicator"><span class="refresh-dot"></span>Auto-refresh: <span id="refresh-timer">30s</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">⚡ Active Alerts <span class="badge" id="map-alert-badge">0</span></div>
+      <div id="map-alert-list" class="map-alert-list"><div style="color:var(--text3);font-size:.78rem;text-align:center;padding:12px">No active alerts</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🔧 Map Controls</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <button class="btn btn-danger" onclick="triggerRandomAlert()">⚡ Simulate Random Alert</button>
+        <button class="btn btn-warning" onclick="triggerWarning()">⚠ Trigger Warning</button>
+        <button class="btn btn-success" onclick="clearMapAlerts()">✓ Clear All Alerts</button>
+        <div class="divider" style="margin:4px 0"></div>
+        <button class="btn btn-ghost" onclick="refreshMap()">🔄 Refresh Map Now</button>
+      </div>
+      <div style="margin-top:14px;padding:12px;background:var(--bg2);border-radius:var(--radius2)">
+        <div style="font-size:.68rem;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;font-family:var(--font-m)">SMS Simulation Log</div>
+        <div id="sms-log" style="font-family:var(--font-m);font-size:.72rem;color:var(--text2);line-height:1.8;max-height:120px;overflow-y:auto"><span style="color:var(--text3)">Awaiting alerts...</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ===================================================
+     PAGE: ABOUT
+=================================================== -->
+<div id="page-about" class="page">
+<div class="section">
+  <div class="section-line"></div>
+  <h2 class="section-title">ABOUT <em>POWERGRID GUARDIAN</em></h2>
+  <p class="section-sub">// Protecting critical infrastructure with next-generation monitoring technology</p>
+  <div class="card-grid">
+    <div class="card"><span class="card-icon">🏢</span><div class="card-title">OUR MISSION</div><p class="card-text">To provide the most advanced electrical grid monitoring and rapid-response system available — keeping citizens safe and power flowing 24/7/365.</p></div>
+    <div class="card"><span class="card-icon">🧠</span><div class="card-title">AI-POWERED CORE</div><p class="card-text">Our proprietary ML engine analyses millions of sensor data points per second to predict and prevent outages before they affect your neighbourhood.</p></div>
+    <div class="card"><span class="card-icon">🌍</span><div class="card-title">COVERAGE</div><p class="card-text">Currently protecting 47 grid zones, 380,000+ homes, and 2.1 million residents across the metropolitan service territory.</p></div>
+    <div class="card"><span class="card-icon">👷</span><div class="card-title">FIELD OPERATIONS</div><p class="card-text">12 active field crews, 200+ registered line men, and sub-30-minute response times for critical faults across all serviced zones.</p></div>
+    <div class="card"><span class="card-icon">📊</span><div class="card-title">ANALYTICS</div><p class="card-text">Comprehensive historical trend analysis, KPI tracking, and predictive maintenance scheduling powered by real-time sensor fusion.</p></div>
+    <div class="card"><span class="card-icon">🔐</span><div class="card-title">SECURITY</div><p class="card-text">End-to-end encrypted communications, role-based access control, and full audit logging for all field operations and dispatches.</p></div>
+  </div>
+</div>
+</div>
+
+<!-- ===================================================
+     PAGE: BACKEND DOCS
+=================================================== -->
+<div id="page-backend" class="page">
+<div class="section-sm">
+  <div class="section-line"></div>
+  <h2 class="section-title">Backend <em>Documentation</em></h2>
+  <p class="section-sub">// Node.js/Express API reference &amp; setup guide</p>
+
+  <div class="grid-2" style="align-items:start">
+    <div>
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-title">📁 Folder Structure</div>
+        <div class="code-block"><span class="dir">powergrid-guardian/</span>
+├── <span class="dir">frontend/</span>            <span class="comment"># All HTML/CSS/JS</span>
+│   ├── <span class="file">index.html</span>       <span class="comment"># Main app (this file)</span>
+│   └── <span class="file">assets/</span>
+│
+├── <span class="dir">backend/</span>             <span class="comment"># Node.js API</span>
+│   ├── <span class="file">server.js</span>        <span class="comment"># Entry point</span>
+│   ├── <span class="file">package.json</span>
+│   ├── <span class="dir">routes/</span>
+│   │   ├── <span class="file">linemen.js</span>
+│   │   ├── <span class="file">sensors.js</span>
+│   │   └── <span class="file">reports.js</span>
+│   ├── <span class="dir">models/</span>
+│   │   ├── <span class="file">Lineman.js</span>
+│   │   └── <span class="file">SensorData.js</span>
+│   └── <span class="dir">data/</span>            <span class="comment"># JSON "database"</span>
+│       ├── <span class="file">linemen.json</span>
+│       └── <span class="file">sensors.json</span>
+│
+└── <span class="file">README.md</span></div>
+      </div>
+
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-title">🚀 How to Run</div>
+        <div class="install-step"><div class="install-step-num">1</div><div class="install-step-content"><h4>Install Node.js</h4><p>Download from nodejs.org (v18+ recommended)</p></div></div>
+        <div class="install-step"><div class="install-step-num">2</div><div class="install-step-content"><h4>Install dependencies</h4><p>cd backend &amp;&amp; npm install</p></div></div>
+        <div class="install-step"><div class="install-step-num">3</div><div class="install-step-content"><h4>Start the server</h4><p>npm start (runs on http://localhost:3000)</p></div></div>
+        <div class="install-step"><div class="install-step-num">4</div><div class="install-step-content"><h4>Open the frontend</h4><p>Open frontend/index.html in your browser</p></div></div>
+        <div class="install-step"><div class="install-step-num">5</div><div class="install-step-content"><h4>(Optional) Twilio SMS</h4><p>Set TWILIO_SID, TWILIO_TOKEN, TWILIO_FROM in .env</p></div></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-title">🔌 API Endpoints</div>
+        <div class="api-endpoint"><div class="endpoint-header"><span class="method-badge method-get">GET</span><span class="endpoint-path">/api/linemen</span></div><div class="endpoint-desc">Get all registered line men with their assigned TCs</div><div class="code-block"><span class="comment">// Response</span>
+[{ <span class="key">"id"</span>: <span class="string">"lm_001"</span>, <span class="key">"name"</span>: <span class="string">"Rajesh Kumar"</span>,
+   <span class="key">"phone"</span>: <span class="string">"+91-9876543210"</span>, <span class="key">"tcs"</span>: [<span class="string">"TC101"</span>] }]</div></div>
+        <div class="api-endpoint"><div class="endpoint-header"><span class="method-badge method-post">POST</span><span class="endpoint-path">/api/linemen</span></div><div class="endpoint-desc">Register a new line man</div><div class="code-block"><span class="comment">// Body (JSON)</span>
+{ <span class="key">"name"</span>: <span class="string">"Rajesh Kumar"</span>,
+  <span class="key">"phone"</span>: <span class="string">"+91-9876543210"</span>,
+  <span class="key">"email"</span>: <span class="string">"rajesh@power.com"</span>,
+  <span class="key">"location"</span>: <span class="string">"Sector 14, Chennai"</span>,
+  <span class="key">"tcs"</span>: [<span class="string">"TC101"</span>, <span class="string">"TC102"</span>] }</div></div>
+        <div class="api-endpoint"><div class="endpoint-header"><span class="method-badge method-get">GET</span><span class="endpoint-path">/api/linemen/tc/:tcId</span></div><div class="endpoint-desc">Find line man assigned to a specific TC</div><div class="code-block"><span class="comment">// GET /api/linemen/tc/TC101</span>
+{ <span class="key">"name"</span>: <span class="string">"Rajesh Kumar"</span>, <span class="key">"phone"</span>: <span class="string">"..."</span> }</div></div>
+        <div class="api-endpoint"><div class="endpoint-header"><span class="method-badge method-post">POST</span><span class="endpoint-path">/api/reports</span></div><div class="endpoint-desc">Submit a public issue report</div><div class="code-block"><span class="comment">// Body (multipart/form-data)</span>
+{ <span class="key">"tcId"</span>: <span class="string">"TC101"</span>,
+  <span class="key">"location"</span>: <span class="string">"Near Bus Stop 7"</span>,
+  <span class="key">"description"</span>: <span class="string">"Sparks visible"</span>,
+  <span class="key">"photo"</span>: <span class="string">[file]</span> }</div></div>
+        <div class="api-endpoint"><div class="endpoint-header"><span class="method-badge method-post">POST</span><span class="endpoint-path">/api/sensors/alert</span></div><div class="endpoint-desc">Trigger a sensor alert and send SMS</div><div class="code-block"><span class="comment">// Body (JSON)</span>
+{ <span class="key">"tcId"</span>: <span class="string">"TC101"</span>,
+  <span class="key">"problem"</span>: <span class="string">"High Corrosion"</span>,
+  <span class="key">"severity"</span>: <span class="string">"danger"</span>,
+  <span class="key">"location"</span>: <span class="string">"Sector 14, Chennai"</span> }</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:8px">
+    <div class="card-title">📄 server.js — Full Backend Code <span class="badge">Node.js + Express</span></div>
+    <div class="code-block" style="font-size:.7rem;line-height:1.7;max-height:400px;overflow-y:auto">
+<span class="comment">// backend/server.js</span>
+<span class="keyword">const</span> express = require(<span class="string">'express'</span>);
+<span class="keyword">const</span> cors = require(<span class="string">'cors'</span>);
+<span class="keyword">const</span> fs = require(<span class="string">'fs'</span>);
+<span class="keyword">const</span> multer = require(<span class="string">'multer'</span>);
+<span class="comment">// const twilio = require('twilio'); // Uncomment for real SMS</span>
+
+<span class="keyword">const</span> app = express();
+<span class="keyword">const</span> PORT = <span class="string">3000</span>;
+<span class="keyword">const</span> upload = multer({ dest: <span class="string">'uploads/'</span> });
+
+app.use(cors());
+app.use(express.json());
+
+<span class="comment">// ── Simple JSON "database" helpers ──</span>
+<span class="keyword">const</span> DB_PATH = <span class="string">'./data/linemen.json'</span>;
+<span class="keyword">const</span> readDB = () => JSON.parse(fs.readFileSync(DB_PATH, <span class="string">'utf-8'</span>));
+<span class="keyword">const</span> writeDB = (data) => fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2));
+
+app.get(<span class="string">'/api/linemen'</span>, (req, res) => { res.json(readDB()); });
+
+app.post(<span class="string">'/api/linemen'</span>, (req, res) => {
+  <span class="keyword">const</span> { name, phone, email, location, tcs } = req.body;
+  <span class="keyword">const</span> db = readDB();
+  <span class="keyword">const</span> newLineman = { id: <span class="string">`lm_${Date.now()}`</span>, name, phone, email, location, tcs, createdAt: <span class="keyword">new</span> Date() };
+  db.push(newLineman);
+  writeDB(db);
+  res.status(<span class="string">201</span>).json(newLineman);
+});
+
+app.get(<span class="string">'/api/linemen/tc/:tcId'</span>, (req, res) => {
+  <span class="keyword">const</span> db = readDB();
+  <span class="keyword">const</span> lineman = db.find(lm => lm.tcs.includes(req.params.tcId.toUpperCase()));
+  <span class="keyword">if</span> (!lineman) <span class="keyword">return</span> res.status(<span class="string">404</span>).json({ error: <span class="string">'No line man found'</span> });
+  res.json(lineman);
+});
+
+app.post(<span class="string">'/api/reports'</span>, upload.single(<span class="string">'photo'</span>), (req, res) => {
+  <span class="keyword">const</span> { tcId, location, description } = req.body;
+  <span class="keyword">const</span> db = readDB();
+  <span class="keyword">const</span> lineman = db.find(lm => lm.tcs.includes(tcId?.toUpperCase()));
+  console.log(<span class="string">`SMS sent to ${lineman?.name}: Issue at ${location} - ${description}`</span>);
+  res.json({ success: <span class="keyword">true</span>, assignedTo: lineman || <span class="keyword">null</span> });
+});
+
+app.post(<span class="string">'/api/sensors/alert'</span>, (req, res) => {
+  <span class="keyword">const</span> { tcId, problem, severity, location } = req.body;
+  <span class="keyword">const</span> mapsLink = <span class="string">`https://maps.google.com/?q=${encodeURIComponent(location)}`</span>;
+  <span class="keyword">const</span> smsMsg = <span class="string">`ALERT: ${problem} at ${tcId}. Maps: ${mapsLink}`</span>;
+  console.log(<span class="string">`[SMS] ${smsMsg}`</span>);
+  res.json({ success: <span class="keyword">true</span>, smsMessage: smsMsg, mapsLink });
+});
+
+app.listen(PORT, () => console.log(<span class="string">`✅ Server on http://localhost:${PORT}`</span>));
+    </div>
+  </div>
+</div>
+</div>
+
+</main>
+
+<!-- TICKER -->
+<div class="ticker">
+  <span class="ticker-inner">
+    ⚡ ZONE 7 CRITICAL OUTAGE — CREW #4 ON SITE — ETA 3H 40M &nbsp;&nbsp;|&nbsp;&nbsp;
+    ⚡ ZONE 3 FAULT REPAIR IN PROGRESS — ETA 1H 20M &nbsp;&nbsp;|&nbsp;&nbsp;
+    ⚡ GRID UPTIME: 98.4% &nbsp;&nbsp;|&nbsp;&nbsp;
+    ⚡ 12 FIELD CREWS ACTIVE &nbsp;&nbsp;|&nbsp;&nbsp;
+    ⚡ REPORT FAULTS VIA THE PUBLIC PORTAL &nbsp;&nbsp;|&nbsp;&nbsp;
+    ⚡ EMERGENCY LINE: 1-800-PWR-GRID &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  </span>
+</div>
+
+<footer>© 2025 POWERGRID GUARDIAN SYSTEMS · ALL RIGHTS RESERVED · INFRASTRUCTURE MONITORING DIVISION</footer>
+
+<!-- ===================================================
+     JAVASCRIPT
+=================================================== -->
+<script>
+/* ===== DATA ===== */
+let db = JSON.parse(localStorage.getItem('pg_linemen') || '[]');
+let alerts = [];
+let currentStep = 1;
+
+const solutionMap = {
+  'Voltage Fluctuation': 'Check capacitor banks, inspect connections, test voltage regulator',
+  'Temperature': 'Verify ambient temperature, check cooling system, verify insulation rating',
+  'Over Load': 'Reduce current draw, redistribute load phases, inspect terminal lines',
+  'Overheating': 'Reduce transformer load immediately, inspect coolant systems, verify oil level',
+  'Short Circuit': 'Isolate the transformer circuit, run circuit diagnostics, check for ground faults',
+  'Winding Stress': 'Run structural diagnostics, check winding resistance, balance phases',
+  'Insulation Damage': 'Measure dielectric strength, inspect bushings, replace insulation barrier if required',
+  'Oil Heating': 'Inspect radiator block, check oil circulation pump, verify liquid level'
+};
+
+/* ===== NAVIGATION ===== */
+function showPage(id, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  if (btn) btn.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (id === 'reg') renderLinemenCards();
+  if (id === 'livemap') renderMap();
+  if (id === 'telemetry') { initTelemetry(); renderTelemetryTcs(); updateTelemetryView(); }
+}
+
+/* ===== TOAST ===== */
+function toast(msg, type = 'info') {
+  const c = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  t.className = `toast toast-${type}`;
+  const icons = { success: '✅', error: '❌', info: 'ℹ️', warn: '⚠️' };
+  t.innerHTML = `<span>${icons[type] || 'ℹ️'}</span><span>${msg}</span>`;
+  c.appendChild(t);
+  setTimeout(() => { t.classList.add('removing'); setTimeout(() => t.remove(), 300); }, 3500);
+}
+
+/* ===== LIVE CLOCK ===== */
+function updateClock() {
+  const el = document.getElementById('clock');
+  if (el) el.textContent = new Date().toLocaleTimeString('en-US', { hour12: false });
+}
+updateClock();
+setInterval(updateClock, 1000);
+
+/* ===== STATS ===== */
+function updateStats() {
+  const totalTC = db.reduce((a, lm) => a + (lm.tcs ? lm.tcs.length : 0), 0);
+  const activeAlerts = alerts.filter(a => a.severity === 'danger').length;
+  ['stat-total','qs-total'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = db.length; });
+  ['stat-tcs','qs-tcs'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = totalTC; });
+  const sa = document.getElementById('stat-active'); if (sa) sa.textContent = activeAlerts;
+  const lc = document.getElementById('lm-count'); if (lc) lc.textContent = db.length > 0 ? `(${db.length})` : '';
+}
+
+function saveDB() { localStorage.setItem('pg_linemen', JSON.stringify(db)); updateStats(); }
+function escHtml(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+/* ===== PAGE: REGISTRATION ===== */
+function nextStep1() {
+  let ok = true;
+  const name = document.getElementById('inp-name').value.trim();
+  const phone = document.getElementById('inp-phone').value.trim();
+  const email = document.getElementById('inp-email').value.trim();
+  const showErr = (id, show) => {
+    document.getElementById(id).classList.toggle('show', show);
+    document.getElementById(id.replace('err-','inp-')).classList.toggle('error', show);
+  };
+  if (name.length < 2) { showErr('err-name', true); ok = false; } else showErr('err-name', false);
+  const phoneRe = /^\+?[\d\s\-\(\)]{10,15}$/;
+  if (!phoneRe.test(phone)) { showErr('err-phone', true); ok = false; } else showErr('err-phone', false);
+  const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRe.test(email)) { showErr('err-email', true); ok = false; } else showErr('err-email', false);
+  if (!ok) return;
+  goToStep(2); updatePreview();
+}
+function nextStep2() {
+  const loc = document.getElementById('inp-location').value.trim();
+  if (!loc) { document.getElementById('err-location').classList.add('show'); document.getElementById('inp-location').classList.add('error'); return; }
+  document.getElementById('err-location').classList.remove('show'); document.getElementById('inp-location').classList.remove('error');
+  goToStep(3);
+}
+function prevStep() { goToStep(1); }
+function prevStep2() { goToStep(2); }
+function goToStep(n) {
+  currentStep = n;
+  document.getElementById('form-step1').style.display = n === 1 ? '' : 'none';
+  document.getElementById('form-step2').style.display = n === 2 ? '' : 'none';
+  document.getElementById('form-step3').style.display = n === 3 ? '' : 'none';
+  ['step1','step2','step3'].forEach((id, i) => {
+    const el = document.getElementById(id);
+    el.classList.toggle('active', i + 1 === n);
+    el.classList.toggle('done', i + 1 < n);
+  });
+}
+function updatePreview() {
+  const name = document.getElementById('inp-name').value.trim();
+  const phone = document.getElementById('inp-phone').value.trim();
+  const email = document.getElementById('inp-email').value.trim();
+  const loc = document.getElementById('inp-location').value.trim();
+  if (name) {
+    document.getElementById('preview-empty').style.display = 'none';
+    document.getElementById('preview-content').style.display = '';
+    document.getElementById('prev-avatar').textContent = name.charAt(0).toUpperCase();
+    document.getElementById('prev-name').textContent = name;
+    document.getElementById('prev-phone').textContent = phone || '—';
+    document.getElementById('prev-email').textContent = email || '—';
+    document.getElementById('prev-location').textContent = loc || '—';
+  }
+}
+['inp-name','inp-phone','inp-email','inp-location'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('input', updatePreview);
+});
+function getGPS() {
+  if (!navigator.geolocation) { toast('Geolocation not supported', 'error'); return; }
+  toast('Getting GPS location...', 'info');
+  navigator.geolocation.getCurrentPosition(pos => {
+    document.getElementById('inp-lat').value = pos.coords.latitude.toFixed(6);
+    document.getElementById('inp-lng').value = pos.coords.longitude.toFixed(6);
+    toast('GPS location captured!', 'success');
+  }, () => {
+    document.getElementById('inp-lat').value = '12.971599';
+    document.getElementById('inp-lng').value = '77.594566';
+    toast('Used demo GPS coordinates', 'warn');
+  });
+}
+function registerLineman() {
+  const tc1 = document.getElementById('inp-tc1').value.trim().toUpperCase();
+  const tc2 = document.getElementById('inp-tc2').value.trim().toUpperCase();
+  const tc3 = document.getElementById('inp-tc3').value.trim().toUpperCase();
+  const tcs = [tc1, tc2, tc3].filter(Boolean);
+  if (tcs.length === 0) { document.getElementById('err-tcs').classList.add('show'); return; }
+  document.getElementById('err-tcs').classList.remove('show');
+  const newLM = {
+    id: 'lm_' + Date.now(),
+    name: document.getElementById('inp-name').value.trim(),
+    phone: document.getElementById('inp-phone').value.trim(),
+    email: document.getElementById('inp-email').value.trim(),
+    location: document.getElementById('inp-location').value.trim(),
+    lat: document.getElementById('inp-lat').value || null,
+    lng: document.getElementById('inp-lng').value || null,
+    tcs, registeredAt: new Date().toISOString()
+  };
+  db.push(newLM);
+  saveDB();
+  renderLinemenCards();
+  resetForm();
+  toast(`✅ ${newLM.name} registered successfully!`, 'success');
+}
+function resetForm() {
+  ['inp-name','inp-phone','inp-email','inp-location','inp-lat','inp-lng','inp-tc1','inp-tc2','inp-tc3'].forEach(id => { document.getElementById(id).value = ''; });
+  goToStep(1);
+  document.getElementById('preview-empty').style.display = '';
+  document.getElementById('preview-content').style.display = 'none';
+}
+function renderLinemenCards() {
+  const grid = document.getElementById('lineman-cards');
+  const noEl = document.getElementById('no-lineman');
+  if (db.length === 0) { grid.innerHTML = ''; grid.appendChild(noEl); noEl.style.display = ''; updateStats(); return; }
+  grid.innerHTML = '';
+  db.forEach(lm => {
+    const card = document.createElement('div');
+    card.className = 'lineman-card';
+    card.innerHTML = `
+      <div class="lineman-header">
+        <div class="lineman-avatar">${lm.name.charAt(0).toUpperCase()}</div>
+        <div class="lineman-info"><h3>${escHtml(lm.name)}</h3><p>${escHtml(lm.phone)}</p></div>
+      </div>
+      <div class="lineman-meta">
+        <div class="lineman-meta-row"><span>📧</span><span>${escHtml(lm.email)}</span></div>
+        <div class="lineman-meta-row"><span>📍</span><span>${escHtml(lm.location)}</span></div>
+        ${lm.lat ? `<div class="lineman-meta-row"><span>🛰</span><span style="font-family:var(--font-m);font-size:.72rem">${lm.lat}, ${lm.lng}</span></div>` : ''}
+      </div>
+      <div>
+        <div class="tc-section-label">Assigned Transformers</div>
+        <div class="tc-list">${lm.tcs.map(tc => `<span class="tc-badge">${escHtml(tc)}</span>`).join('')}</div>
+      </div>
+      <div class="assign-tc">
+        <div class="tc-section-label">Add TC</div>
+        <div class="tc-assign-row">
+          <input class="tc-input-mini" id="add-tc-${lm.id}" placeholder="TC104" autocomplete="off"/>
+          <button class="btn btn-primary btn-sm" onclick="addTC('${lm.id}')">+ Add</button>
+          <button class="btn btn-ghost btn-sm" onclick="deleteLineman('${lm.id}')" title="Delete">🗑</button>
+        </div>
+      </div>`;
+    grid.appendChild(card);
+  });
+  updateStats();
+}
+function addTC(id) {
+  const inp = document.getElementById('add-tc-' + id);
+  const val = inp.value.trim().toUpperCase();
+  if (!val) return;
+  const lm = db.find(l => l.id === id);
+  if (!lm) return;
+  if (!lm.tcs.includes(val)) { lm.tcs.push(val); saveDB(); renderLinemenCards(); toast(`TC ${val} assigned to ${lm.name}`, 'success'); }
+  else toast('TC already assigned', 'warn');
+}
+function deleteLineman(id) {
+  if (!confirm('Delete this line man?')) return;
+  db = db.filter(l => l.id !== id);
+  saveDB(); renderLinemenCards(); toast('Line man removed', 'warn');
+}
+function clearAll() {
+  if (!confirm('Clear all registered line men?')) return;
+  db = []; saveDB(); renderLinemenCards(); toast('All records cleared', 'warn');
+}
+
+/* ===== PAGE: DANGER ALERTS ===== */
+function triggerAlert() {
+  const tc = document.getElementById('sim-tc').value.trim().toUpperCase() || 'TC' + Math.floor(Math.random() * 900 + 100);
+  const problem = document.getElementById('sim-problem').value;
+  const severity = document.getElementById('sim-severity').value;
+  const location = document.getElementById('sim-location').value.trim() || 'Sector 14, Chennai';
+  const solution = solutionMap[problem] || 'Contact senior engineer';
+  const mapsLink = `https://maps.google.com/?q=${encodeURIComponent(location + ' transformer station')}`;
+  const alert = { id: Date.now(), tc, problem, severity, solution, location, mapsLink, time: new Date().toLocaleTimeString() };
+  alerts.unshift(alert);
+  renderAlerts(); updateStats();
+  toast(`Alert triggered: ${tc} — ${severity.toUpperCase()}`, severity === 'danger' ? 'error' : severity === 'warning' ? 'warn' : 'success');
+}
+function renderAlerts() {
+  const grid = document.getElementById('alert-grid');
+  const noEl = document.getElementById('no-alerts');
+  const countEl = document.getElementById('alert-count');
+  if (alerts.length === 0) { grid.innerHTML = ''; grid.appendChild(noEl); noEl.style.display = ''; countEl.textContent = ''; renderSensorOverview(); return; }
+  countEl.textContent = `(${alerts.length})`;
+  grid.innerHTML = '';
+  alerts.forEach(a => {
+    const card = document.createElement('div');
+    card.className = `alert-card ${a.severity}`;
+    const svgVisual = generateSensorSVG(a.severity);
+    card.innerHTML = `
+      <div class="alert-card-header">
+        <div class="tc-id ${a.severity}">${escHtml(a.tc)}</div>
+        ${a.severity === 'safe' ? `<span class="status-safe"><span class="pulse pulse-green"></span>SAFE</span>` :
+          a.severity === 'warning' ? `<span class="status-warn"><span class="pulse pulse-yellow"></span>WARNING</span>` :
+          `<span class="status-danger"><span class="pulse pulse-red"></span>DANGER</span>`}
+      </div>
+      <div class="sensor-visual">${svgVisual}</div>
+      <div class="alert-detail"><strong>Problem:</strong><span>${escHtml(a.problem)}</span></div>
+      <div class="alert-detail"><strong>Solution:</strong><span>${escHtml(a.solution)}</span></div>
+      <div class="alert-detail"><strong>Location:</strong><span>${escHtml(a.location)}</span></div>
+      <div class="alert-detail"><strong>Time:</strong><span style="font-family:var(--font-m)">${a.time}</span></div>
+      <div class="alert-actions">
+        <a href="${a.mapsLink}" target="_blank" class="btn btn-ghost btn-sm">🗺 Maps</a>
+        <button class="btn btn-${a.severity === 'danger' ? 'danger' : 'warning'} btn-sm" onclick="simulateSMS('${a.id}')">📱 SMS</button>
+        <button class="btn btn-ghost btn-sm" onclick="dismissAlert('${a.id}')">✕ Dismiss</button>
+      </div>
+      <div class="sms-simulation" id="sms-${a.id}">
+        <div style="color:var(--green);font-size:.68rem;font-weight:700;text-transform:uppercase;margin-bottom:6px">📱 SMS Sent to Line Man</div>
+        <div>📨 ALERT at ${escHtml(a.tc)}: ${escHtml(a.problem)}. Fix: ${escHtml(a.solution)}. <a href="${a.mapsLink}" target="_blank" style="color:var(--cyan)">[View Location]</a></div>
+        <div style="color:var(--green);margin-top:4px">✅ Delivered at ${a.time}</div>
+      </div>`;
+    grid.appendChild(card);
+  });
+  renderSensorOverview();
+}
+function generateSensorSVG(severity) {
+  const colors = { safe: ['#00ff88','#00cc6a'], warning: ['#ffd700','#e6b800'], danger: ['#ff3366','#cc0033'] };
+  const [c1] = colors[severity] || colors.safe;
+  const bars = Array.from({length:12}, (_,i) => {
+    const h = severity === 'danger' ? Math.random()*40+20 : severity === 'warning' ? Math.random()*25+10 : Math.random()*15+5;
+    return `<rect x="${i*18+10}" y="${60-h}" width="12" height="${h}" rx="2" fill="${c1}" opacity="${0.4+Math.random()*0.5}"/>`;
+  }).join('');
+  return `<svg viewBox="0 0 230 70" xmlns="http://www.w3.org/2000/svg"><rect width="230" height="70" rx="4" fill="${c1}" fill-opacity=".04"/>${bars}<text x="10" y="66" font-size="8" fill="${c1}" font-family="monospace" opacity=".6">SENSOR: ${severity.toUpperCase()} — LIVE FEED</text></svg>`;
+}
+function renderSensorOverview() {
+  const el = document.getElementById('sensor-overview');
+  if (alerts.length === 0) { el.innerHTML = '<div style="color:var(--text3);font-size:.85rem;text-align:center;padding:20px">Trigger alerts to see sensor data here</div>'; return; }
+  const counts = { safe:0, warning:0, danger:0 };
+  alerts.forEach(a => counts[a.severity] = (counts[a.severity]||0) + 1);
+  el.innerHTML = `
+    <div style="display:flex;gap:8px">
+      <div style="flex:1;background:rgba(0,255,136,.05);border:1px solid rgba(0,255,136,.15);border-radius:8px;padding:10px;text-align:center">
+        <div style="font-size:1.2rem;font-weight:900;color:var(--green);font-family:var(--font-d)">${counts.safe}</div>
+        <div style="font-size:.65rem;color:var(--text3);margin-top:2px;font-family:var(--font-m)">SAFE</div>
+      </div>
+      <div style="flex:1;background:rgba(255,215,0,.05);border:1px solid rgba(255,215,0,.15);border-radius:8px;padding:10px;text-align:center">
+        <div style="font-size:1.2rem;font-weight:900;color:var(--yellow);font-family:var(--font-d)">${counts.warning}</div>
+        <div style="font-size:.65rem;color:var(--text3);margin-top:2px;font-family:var(--font-m)">WARN</div>
+      </div>
+      <div style="flex:1;background:rgba(255,51,102,.05);border:1px solid rgba(255,51,102,.2);border-radius:8px;padding:10px;text-align:center">
+        <div style="font-size:1.2rem;font-weight:900;color:var(--red);font-family:var(--font-d)">${counts.danger}</div>
+        <div style="font-size:.65rem;color:var(--text3);margin-top:2px;font-family:var(--font-m)">DANGER</div>
+      </div>
+    </div>
+    <div style="margin-top:12px">
+      ${alerts.slice(0,4).map(a => `
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border)">
+          <span style="font-family:var(--font-m);font-size:.78rem;color:${a.severity==='danger'?'var(--red)':a.severity==='warning'?'var(--yellow)':'var(--green)'}">${a.tc}</span>
+          <span style="font-size:.75rem;color:var(--text2)">${a.problem}</span>
+          <span style="font-size:.68rem;color:var(--text3)">${a.time}</span>
+        </div>`).join('')}
+    </div>`;
+}
+function simulateSMS(id) { const el = document.getElementById('sms-' + id); if (el) { el.classList.add('show'); toast('SMS simulation sent!', 'success'); } }
+function dismissAlert(id) { alerts = alerts.filter(a => a.id != id); renderAlerts(); updateStats(); }
+function clearAlerts() { alerts = []; renderAlerts(); updateStats(); toast('All alerts cleared', 'info'); }
+
+/* ===== PAGE: PUBLIC REPORTING ===== */
+function getRepGPS() {
+  if (!navigator.geolocation) { toast('Geolocation not supported', 'error'); return; }
+  navigator.geolocation.getCurrentPosition(pos => {
+    document.getElementById('rep-loc').value = `${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)}`;
+    toast('Location detected!', 'success');
+  }, () => { document.getElementById('rep-loc').value = 'Near Sector 14, Chennai'; toast('Used demo location', 'warn'); });
+}
+function handlePhotoUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => { const img = document.getElementById('preview-photo'); img.src = ev.target.result; img.style.display = 'block'; };
+  reader.readAsDataURL(file);
+  document.getElementById('upload-zone').querySelector('.upload-text').textContent = '✅ ' + file.name;
+  toast('Photo uploaded!', 'success');
+}
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('upload-zone').classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if (file && file.type.startsWith('image/')) {
+    const dt = new DataTransfer(); dt.items.add(file);
+    document.getElementById('rep-photo').files = dt.files;
+    handlePhotoUpload({ target: { files: [file] } });
+  }
+}
+function submitReport() {
+  const tc = document.getElementById('rep-tc').value.trim().toUpperCase();
+  const loc = document.getElementById('rep-loc').value.trim();
+  let ok = true;
+  if (!tc) { document.getElementById('rep-err-tc').classList.add('show'); ok = false; } else document.getElementById('rep-err-tc').classList.remove('show');
+  if (!loc) { document.getElementById('rep-err-loc').classList.add('show'); ok = false; } else document.getElementById('rep-err-loc').classList.remove('show');
+  if (!ok) return;
+  let lineman = db.find(lm => lm.tcs.includes(tc));
+  if (!lineman && db.length > 0) lineman = db[0];
+  const resultEl = document.getElementById('nearest-lineman');
+  if (lineman) {
+    document.getElementById('res-avatar').textContent = lineman.name.charAt(0).toUpperCase();
+    document.getElementById('res-name').textContent = lineman.name;
+    document.getElementById('res-phone').textContent = lineman.phone;
+    document.getElementById('res-tc').textContent = 'Assigned TCs: ' + lineman.tcs.join(', ');
+    const callBtn = document.getElementById('call-btn');
+    callBtn.setAttribute('data-phone', lineman.phone);
+    callBtn.setAttribute('data-name', lineman.name);
+  } else {
+    document.getElementById('res-avatar').textContent = '?';
+    document.getElementById('res-name').textContent = 'Demo Line Man';
+    document.getElementById('res-phone').textContent = '+91 98765 43210';
+    document.getElementById('res-tc').textContent = 'Assigned TCs: TC101, TC102';
+  }
+  resultEl.classList.add('show');
+  document.getElementById('report-success').classList.add('show');
+  const smsEl = document.getElementById('sms-sent-msg');
+  smsEl.style.display = 'block';
+  smsEl.textContent = `📨 SMS sent: Issue at TC: ${tc}, Location: ${loc}. Technician dispatched.`;
+  toast('Report submitted successfully!', 'success');
+}
+function simulateCall() {
+  const btn = document.getElementById('call-btn');
+  const name = btn.getAttribute('data-name') || 'Line Man';
+  const phone = btn.getAttribute('data-phone') || '+91 98765 43210';
+  toast(`📞 Calling ${name} at ${phone}...`, 'info');
+  setTimeout(() => toast(`Connected to ${name}`, 'success'), 1500);
+}
+
+/* ===== FEEDBACK ===== */
+const feedbackData = [];
+let selectedRating = 0;
+const stars = document.querySelectorAll('.star');
+const ratingText = document.getElementById('ratingText');
+const feedbackTextArea = document.getElementById('feedbackText');
+const successMsg = document.getElementById('successMsg');
+const starLabels = ['','Terrible','Poor','Average','Good','Excellent'];
+stars.forEach(star => {
+  star.addEventListener('mouseenter', () => {
+    const v = parseInt(star.dataset.val);
+    stars.forEach((s, i) => { s.classList.remove('selected'); s.classList.toggle('hovered', i < v); });
+    ratingText.textContent = `Selected Rating: ${v} Star${v > 1 ? 's' : ''} — ${starLabels[v]}`;
+    ratingText.classList.add('visible');
+  });
+  star.addEventListener('mouseleave', () => {
+    stars.forEach((s, i) => { s.classList.remove('hovered'); s.classList.toggle('selected', i < selectedRating); });
+    if (selectedRating > 0) { ratingText.textContent = `Selected Rating: ${selectedRating} Star${selectedRating > 1 ? 's' : ''} — ${starLabels[selectedRating]}`; ratingText.classList.add('visible'); }
+    else ratingText.classList.remove('visible');
+  });
+  star.addEventListener('click', () => {
+    selectedRating = parseInt(star.dataset.val);
+    stars.forEach((s, i) => { s.classList.remove('hovered'); s.classList.toggle('selected', i < selectedRating); });
+    ratingText.textContent = `Selected Rating: ${selectedRating} Star${selectedRating > 1 ? 's' : ''} — ${starLabels[selectedRating]}`;
+    ratingText.classList.add('visible');
+  });
+});
+function submitFeedback() {
+  successMsg.classList.remove('visible');
+  const comment = feedbackTextArea.value.trim();
+  if (selectedRating === 0) { document.getElementById('feedbackSection').classList.add('shake'); setTimeout(() => document.getElementById('feedbackSection').classList.remove('shake'), 400); alert('⚠ Please select a star rating.'); return; }
+  if (!comment) { feedbackTextArea.classList.add('shake'); setTimeout(() => feedbackTextArea.classList.remove('shake'), 400); alert('⚠ Please enter your comments.'); return; }
+  feedbackData.push({ id: feedbackData.length + 1, rating: selectedRating, label: starLabels[selectedRating], comment, timestamp: new Date().toISOString() });
+  feedbackTextArea.value = ''; selectedRating = 0;
+  stars.forEach(s => s.classList.remove('selected','hovered'));
+  ratingText.textContent = ''; ratingText.classList.remove('visible');
+  successMsg.classList.add('visible');
+  setTimeout(() => successMsg.classList.remove('visible'), 5000);
+  toast('Feedback submitted! Thank you.', 'success');
+}
+
+
+/* ===== LIVE MAP (INTERNAL TC MAP) ===== */
+const TC_POSITIONS = [
+  { id:'TC101', x:'15%', y:'20%', status:'safe' },
+  { id:'TC102', x:'35%', y:'45%', status:'safe' },
+  { id:'TC103', x:'55%', y:'20%', status:'safe' },
+  { id:'TC104', x:'75%', y:'45%', status:'safe' },
+  { id:'TC105', x:'90%', y:'20%', status:'safe' },
+  { id:'TC106', x:'20%', y:'70%', status:'safe' },
+  { id:'TC107', x:'50%', y:'70%', status:'safe' },
+  { id:'TC108', x:'80%', y:'70%', status:'safe' },
+];
+let mapAlerts = {};
+let refreshCount = 30;
+
+function renderMap() {
+  const container = document.getElementById('map-markers');
+  container.innerHTML = '';
+  TC_POSITIONS.forEach(tc => {
+    const status = mapAlerts[tc.id]?.severity || tc.status;
+    const div = document.createElement('div');
+    div.className = 'map-marker';
+    div.style.left = tc.x; div.style.top = tc.y;
+    div.onclick = () => showMapTooltip(tc.id, div);
+    div.innerHTML = `<div class="map-marker-inner ${status}"><span class="marker-label">${tc.id}</span>${tc.id.replace('TC','').substring(0,3)}</div>`;
+    container.appendChild(div);
+  });
+  updateMapAlertList();
+}
+function showMapTooltip(tcId, el) {
+  const tt = document.getElementById('map-tooltip');
+  const data = mapAlerts[tcId];
+  const rect = el.getBoundingClientRect();
+  const mapRect = document.getElementById('sim-map').getBoundingClientRect();
+  tt.style.left = (rect.left - mapRect.left + 20) + 'px';
+  tt.style.top = (rect.top - mapRect.top - 10) + 'px';
+  document.getElementById('tt-tcid').textContent = tcId;
+  document.getElementById('tt-tcid').style.color = data ? (data.severity === 'danger' ? 'var(--red)' : 'var(--yellow)') : 'var(--green)';
+  document.getElementById('tt-status').textContent = data ? data.severity.toUpperCase() : 'SAFE';
+  document.getElementById('tt-problem').textContent = data ? data.problem : 'None';
+  document.getElementById('tt-solution').textContent = data ? data.solution : 'All systems nominal';
+  const loc = data ? data.location : (tcId + ' Station');
+  document.getElementById('tt-maps-link').href = `https://maps.google.com/?q=${encodeURIComponent(loc)}`;
+  tt.classList.add('show');
+}
+function hideTooltip() { document.getElementById('map-tooltip').classList.remove('show'); }
+function updateMapAlertList() {
+  const list = document.getElementById('map-alert-list');
+  const badge = document.getElementById('map-alert-badge');
+  const keys = Object.keys(mapAlerts);
+  badge.textContent = keys.length;
+  if (keys.length === 0) { list.innerHTML = '<div style="color:var(--text3);font-size:.78rem;text-align:center;padding:12px">No active alerts</div>'; return; }
+  list.innerHTML = keys.map(tc => {
+    const a = mapAlerts[tc];
+    return `<div class="map-alert-item ${a.severity}">
+      <div class="map-alert-tc ${a.severity}">${tc} — ${a.severity.toUpperCase()}</div>
+      <div style="font-size:.72rem;color:var(--text2)">${a.problem}</div>
+      <div style="font-size:.65rem;color:var(--text3);margin-top:3px">${a.time}</div>
+    </div>`;
+  }).join('');
+}
+function triggerRandomAlert() {
+  const tc = TC_POSITIONS[Math.floor(Math.random() * TC_POSITIONS.length)];
+  const problems = Object.keys(solutionMap);
+  const problem = problems[Math.floor(Math.random() * problems.length)];
+  mapAlerts[tc.id] = { severity: 'danger', problem, solution: solutionMap[problem], location: `${tc.id} Station, Sector ${Math.floor(Math.random()*20+1)}`, time: new Date().toLocaleTimeString() };
+  renderMap(); addSMSLog(tc.id, problem, mapAlerts[tc.id].location);
+  toast(`⚡ ${tc.id}: ${problem} — DANGER`, 'error');
+}
+function triggerWarning() {
+  const tc = TC_POSITIONS[Math.floor(Math.random() * TC_POSITIONS.length)];
+  const problems = ['Voltage Fluctuation','High Corrosion','Oil Leakage'];
+  const problem = problems[Math.floor(Math.random() * problems.length)];
+  mapAlerts[tc.id] = { severity: 'warning', problem, solution: solutionMap[problem], location: `${tc.id} Station, Zone ${Math.floor(Math.random()*5+1)}`, time: new Date().toLocaleTimeString() };
+  renderMap(); addSMSLog(tc.id, problem, mapAlerts[tc.id].location);
+  toast(`⚠ ${tc.id}: ${problem} — WARNING`, 'warn');
+}
+function clearMapAlerts() { mapAlerts = {}; renderMap(); toast('All map alerts cleared', 'info'); }
+function refreshMap() { renderMap(); toast('Map refreshed', 'info'); }
+function addSMSLog(tc, problem, location) {
+  const log = document.getElementById('sms-log');
+  const mapsLink = `maps.google.com/?q=${encodeURIComponent(location)}`;
+  const line = document.createElement('div');
+  line.style.borderBottom = '1px solid var(--border)';
+  line.style.paddingBottom = '4px';
+  line.style.marginBottom = '4px';
+  line.innerHTML = `<span style="color:var(--green)">✓</span> SMS→ ${tc}: ${problem} | <a href="https://${mapsLink}" target="_blank" style="color:var(--cyan)">${mapsLink}</a>`;
+  log.insertBefore(line, log.firstChild);
+  if (log.children.length > 5) log.removeChild(log.lastChild);
+}
+setInterval(() => {
+  refreshCount--;
+  if (refreshCount <= 0) { refreshCount = 30; if (document.getElementById('page-livemap').classList.contains('active')) renderMap(); }
+  const el = document.getElementById('refresh-timer');
+  if (el) el.textContent = refreshCount + 's';
+}, 1000);
+
+/* ===== TELEMETRY STATE & LOGIC ===== */
+let activeTelemetryTc = '';
+let telemetrySimEnabled = true;
+let telemetryData = {};
+
+function initTelemetry() {
+  // Clear first so we only show current ones in db
+  telemetryData = {};
+  
+  // Sync TCs from db (registered linemen)
+  db.forEach(lm => {
+    if (lm.tcs) {
+      lm.tcs.forEach(tc => {
+        let formattedId = tc.trim().toUpperCase();
+        if (!telemetryData[formattedId]) {
+          telemetryData[formattedId] = {
+            name: lm.location ? `${lm.location} Area` : 'Registered Lineman Grid Node',
+            temp: 35 + Math.random() * 15,
+            current: 4 + Math.random() * 8,
+            tempSpike: false,
+            currentSpike: false
+          };
+        }
+      });
+    }
+  });
+  
+  // Set default active TC if none or missing
+  const keys = Object.keys(telemetryData);
+  if (keys.length > 0) {
+    if (!activeTelemetryTc || !telemetryData[activeTelemetryTc]) {
+      activeTelemetryTc = keys[0];
+    }
+  } else {
+    activeTelemetryTc = '';
+  }
+  
+  // Update online active counts
+  const activeCountEl = document.getElementById('telemetry-active-count');
+  if (activeCountEl) {
+    activeCountEl.textContent = `${keys.length} Online`;
+  }
+}
+
+function renderTelemetryTcs() {
+  const container = document.getElementById('telemetry-tc-list');
+  if (!container) return;
+  container.innerHTML = '';
+  
+  Object.keys(telemetryData).forEach(tcId => {
+    const data = telemetryData[tcId];
+    const item = document.createElement('div');
+    item.className = `telemetry-tc-item ${tcId === activeTelemetryTc ? 'active' : ''}`;
+    
+    // Status dot color based on values
+    let dotColor = 'pulse-green';
+    if (data.temp > 80 || data.current > 18.0) {
+      dotColor = 'pulse-red';
+    } else if (data.temp > 65 || data.current > 14.0) {
+      dotColor = 'pulse-yellow';
+    }
+    
+    item.onclick = () => selectTelemetryTc(tcId);
+    item.innerHTML = `
+      <div class="telemetry-tc-details">
+        <h4>${tcId}</h4>
+        <p>${data.name}</p>
+      </div>
+      <div class="pulse ${dotColor}" style="width: 8px; height: 8px;"></div>
+    `;
+    container.appendChild(item);
+  });
+}
+
+function selectTelemetryTc(tcId) {
+  activeTelemetryTc = tcId;
+  renderTelemetryTcs();
+  updateTelemetryView();
+}
+
+function updateTelemetryView() {
+  const mainPanel = document.getElementById('telemetry-main-panel');
+  const emptyState = document.getElementById('telemetry-empty-state');
+  
+  if (!activeTelemetryTc || !telemetryData[activeTelemetryTc]) {
+    if (mainPanel) mainPanel.style.display = 'none';
+    if (emptyState) emptyState.style.display = 'block';
+    return;
+  }
+  
+  if (mainPanel) mainPanel.style.display = 'flex';
+  if (emptyState) emptyState.style.display = 'none';
+  
+  const data = telemetryData[activeTelemetryTc];
+  
+  // Set headers
+  document.getElementById('telemetry-current-tc-header').textContent = `CURRENT STATE - ${activeTelemetryTc}`;
+  
+  // Determine overall status
+  const statusBox = document.getElementById('telemetry-status-box');
+  const statusIcon = document.getElementById('telemetry-status-icon');
+  const statusTitle = document.getElementById('telemetry-status-title');
+  const statusDesc = document.getElementById('telemetry-status-desc');
+  
+  if (data.temp > 80 || data.current > 18.0) {
+    statusBox.style.background = 'rgba(255, 51, 102, 0.08)';
+    statusBox.style.borderColor = 'rgba(255, 51, 102, 0.3)';
+    statusIcon.textContent = '🗙';
+    statusIcon.style.color = 'var(--red)';
+    statusIcon.style.borderColor = 'var(--red)';
+    statusIcon.style.background = 'rgba(255, 51, 102, 0.15)';
+    statusTitle.textContent = 'System Status: Critical Alert!';
+    statusTitle.style.color = 'var(--red)';
+    statusDesc.textContent = `Extreme readings detected on ${activeTelemetryTc}. Auto-dispatch routing triggered.`;
+  } else if (data.temp > 65 || data.current > 14.0) {
+    statusBox.style.background = 'rgba(255, 215, 0, 0.08)';
+    statusBox.style.borderColor = 'rgba(255, 215, 0, 0.3)';
+    statusIcon.textContent = '⚠';
+    statusIcon.style.color = 'var(--yellow)';
+    statusIcon.style.borderColor = 'var(--yellow)';
+    statusIcon.style.background = 'rgba(255, 215, 0, 0.15)';
+    statusTitle.textContent = 'System Status: Warning Thresholds';
+    statusTitle.style.color = 'var(--yellow)';
+    statusDesc.textContent = `Elevated telemetry detected on ${activeTelemetryTc}. Monitor load levels.`;
+  } else {
+    statusBox.style.background = 'rgba(0, 255, 136, 0.06)';
+    statusBox.style.borderColor = 'rgba(0, 255, 136, 0.2)';
+    statusIcon.textContent = '✓';
+    statusIcon.style.color = 'var(--green)';
+    statusIcon.style.borderColor = 'var(--green)';
+    statusIcon.style.background = 'rgba(0, 255, 136, 0.15)';
+    statusTitle.textContent = 'System Status: Normal Operations';
+    statusTitle.style.color = 'var(--green)';
+    statusDesc.textContent = 'All transformer sensors reporting stable metrics below warning thresholds.';
+  }
+  
+  // Update Gauges
+  // Temp: Min 0, Max 100
+  updateTelemetryGaugeFill('temp-gauge-fill', 'temp-gauge-value', 'temp-gauge-status', data.temp, 0, 100, 'temp');
+  // Current: Min 0, Max 25
+  updateTelemetryGaugeFill('current-gauge-fill', 'current-gauge-value', 'current-gauge-status', data.current, 0, 25, 'current');
+}
+
+function updateTelemetryGaugeFill(fillId, valId, statusId, value, minVal, maxVal, type) {
+  const valEl = document.getElementById(valId);
+  if (valEl) valEl.textContent = value.toFixed(1);
+  let pct = (value - minVal) / (maxVal - minVal);
+  pct = Math.max(0, Math.min(1, pct));
+  const arcLength = 259;
+  const offset = arcLength * (1 - pct);
+  const fillElement = document.getElementById(fillId);
+  if (fillElement) fillElement.style.strokeDashoffset = offset;
+  
+  let statusText = 'Stable';
+  let color = 'var(--green)';
+  
+  if (type === 'temp') {
+    if (value > 80) {
+      statusText = 'Critical Overheat';
+      color = 'var(--red)';
+    } else if (value > 65) {
+      statusText = 'High Temp Warning';
+      color = 'var(--yellow)';
+    }
+  } else { // current
+    if (value > 18.0) {
+      statusText = 'Overload Danger';
+      color = 'var(--red)';
+    } else if (value > 14.0) {
+      statusText = 'High Load Warning';
+      color = 'var(--yellow)';
+    } else {
+      color = 'var(--cyan)';
+    }
+  }
+  
+  if (fillElement) fillElement.style.stroke = color;
+  const statEl = document.getElementById(statusId);
+  if (statEl) {
+    statEl.textContent = statusText;
+    statEl.style.color = color;
+  }
+}
+
+function toggleTelemetrySimulation() {
+  telemetrySimEnabled = !telemetrySimEnabled;
+  const btn = document.getElementById('btn-toggle-sim');
+  if (btn) {
+    btn.textContent = telemetrySimEnabled ? 'Pause Simulation' : 'Resume Simulation';
+    btn.className = telemetrySimEnabled ? 'btn btn-secondary btn-sm' : 'btn btn-primary btn-sm';
+  }
+  toast(telemetrySimEnabled ? 'Simulation resumed' : 'Simulation paused', 'info');
+}
+
+function triggerTelemetrySpike(type) {
+  const data = telemetryData[activeTelemetryTc];
+  if (!data) return;
+  if (type === 'temp') {
+    data.tempSpike = true;
+    data.temp = 81.5;
+    toast(`🔥 Temperature spike triggered on ${activeTelemetryTc}`, 'error');
+  } else {
+    data.currentSpike = true;
+    data.current = 19.2;
+    toast(`⚡ Current overload triggered on ${activeTelemetryTc}`, 'error');
+  }
+  updateTelemetryView();
+  renderTelemetryTcs();
+}
+
+function resetTelemetrySimulation() {
+  const data = telemetryData[activeTelemetryTc];
+  if (!data) return;
+  data.tempSpike = false;
+  data.currentSpike = false;
+  data.temp = 40 + Math.random() * 5;
+  data.current = 6 + Math.random() * 3;
+  toast(`✓ Telemetry reset to normal for ${activeTelemetryTc}`, 'success');
+  updateTelemetryView();
+  renderTelemetryTcs();
+}
+
+// Telemetry loop
+setInterval(() => {
+  if (!telemetrySimEnabled) return;
+  
+  Object.keys(telemetryData).forEach(tcId => {
+    const data = telemetryData[tcId];
+    if (data.tempSpike) {
+      data.temp += (Math.random() - 0.3) * 1.5;
+      data.temp = Math.max(80, Math.min(98, data.temp));
+    } else {
+      data.temp += (Math.random() - 0.5) * 0.8;
+      data.temp = Math.max(30, Math.min(64, data.temp));
+    }
+    
+    if (data.currentSpike) {
+      data.current += (Math.random() - 0.3) * 0.9;
+      data.current = Math.max(18.0, Math.min(24.5, data.current));
+    } else {
+      data.current += (Math.random() - 0.5) * 0.4;
+      data.current = Math.max(3, Math.min(13, data.current));
+    }
+  });
+  
+  // If telemetry page is currently active, update active view
+  const page = document.getElementById('page-telemetry');
+  if (page && page.classList.contains('active')) {
+    updateTelemetryView();
+    renderTelemetryTcs();
+  }
+}, 1500);
+
+/* ===== INIT ===== */
+renderLinemenCards();
+updateStats();
+initTelemetry();
+if (activeTelemetryTc) {
+  selectTelemetryTc(activeTelemetryTc);
+} else {
+  updateTelemetryView();
+}
+</script>
+</body>
+</html>
